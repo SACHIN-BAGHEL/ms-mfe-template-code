@@ -1,42 +1,173 @@
+######################
+# Project Specific
+######################
+/target/classes/static/**
+/src/test/javascript/coverage/
+
+######################
+# Node
+######################
+/node/
+node_tmp/
+node_modules/
+npm-debug.log.*
+/.awcache/*
+/.cache-loader/*
+
+######################
+# SASS
+######################
+.sass-cache/
+
+######################
+# Eclipse
+######################
+*.pydevproject
+.project
+.metadata
+tmp/
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+.factorypath
+/src/main/resources/rebel.xml
+
+# External tool builders
+.externalToolBuilders/**
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# STS-specific
+/.sts4-cache/*
+
+######################
+# IntelliJ
+######################
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+classes/
+out/
+
+######################
+# Visual Studio Code
+######################
+.vscode/
+
+######################
+# Maven
+######################
+/log/
+**/target/
+
+######################
+# Gradle
+######################
+.gradle/
+/build/
+
+######################
+# Package Files
+######################
+*.jar
+*.war
+*.ear
+*.db
+
+######################
+# Windows
+######################
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+######################
+# Mac OSX
+######################
+.DS_Store
+.svn
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+######################
+# Directories
+######################
+/bin/
+/deploy/
+
+######################
+# Logs
+######################
+*.log*
+
+######################
+# Others
+######################
+*.class
+*.*~
+*~
+.merge_file*
+
+######################
+# Gradle Wrapper
+######################
+!gradle/wrapper/gradle-wrapper.jar
+
+######################
+# Maven Wrapper
+######################
+!.mvn/wrapper/maven-wrapper.jar
+
+######################
+# ESLint
+######################
+.eslintcache
+
+## Local DB settings
+/src/main/docker/keycloak-db/
+/src/main/docker/postgresql-db/
+/src/main/docker/postgres-db/
+
+######################
+# Entando bundles
+######################
+####
+
+.ent/ent-state
+/src/main/docker/docker.yml
+/entando-data/
+/**/.ent/
+/ui/**/build/
+
+####
+/bundle/
 
 ########
 .ent/ent-state
-.DS_STORE
-node_modules
-scripts/flow/*/.flowconfig
-.flowconfig
-*~
-*.pyc
-.grunt
-_SpecRunner.html
-__benchmarks__
-build/
-remote-repo/
-coverage/
-.module-cache
-fixtures/dom/public/react-dom.js
-fixtures/dom/public/react.js
-test/the-files-to-test.generated.js
-*.log*
-chrome-user-data
-*.sublime-project
-*.sublime-workspace
-.idea
-*.iml
-.vscode
-*.swp
-*.swo
 
-packages/react-devtools-core/dist
-packages/react-devtools-extensions/chrome/build
-packages/react-devtools-extensions/chrome/*.crx
-packages/react-devtools-extensions/chrome/*.pem
-packages/react-devtools-extensions/firefox/build
-packages/react-devtools-extensions/firefox/*.xpi
-packages/react-devtools-extensions/firefox/*.pem
-packages/react-devtools-extensions/shared/build
-packages/react-devtools-extensions/.tempUserDataDir
-packages/react-devtools-inline/dist
-packages/react-devtools-shell/dist
-packages/react-devtools-timeline/dist
 
+####
+bundle/
