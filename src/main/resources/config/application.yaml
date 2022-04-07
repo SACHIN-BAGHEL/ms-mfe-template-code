@@ -37,7 +37,7 @@ spring:
   datasource:
     # Enable this section for postgresql
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/appbuilder1
+    url: jdbc:postgresql://localhost:5432/strapi_template_db
     username: postgres
     password: postgres
   jpa:
