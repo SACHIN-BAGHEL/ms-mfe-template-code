@@ -32,3 +32,16 @@ app:
     auth-server-url: ${keycloak.auth-server-url}
     realm: ${keycloak.realm}
     client-ui: public
+
+spring:
+  datasource:
+    # Enable this section for postgresql
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/appbuilder1
+    username: postgres
+    password: postgres
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: update
