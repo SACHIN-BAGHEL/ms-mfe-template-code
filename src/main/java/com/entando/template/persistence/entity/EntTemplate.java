@@ -1,34 +1,55 @@
 package com.entando.template.persistence.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import lombok.Data;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class EntTemplate {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    @Column(nullable = false)
-    private String templateName;
+	@Column(nullable = false)
+	private String templateName;
 
-    @Column(nullable = false, length = 600)
-    private String collectionType;
-    
-    @Column(nullable = false, length = 600)
-    private String contentShape;
-    
-    @Column(nullable = false,unique=true)
-    private String code;
+	@Column(nullable = false, length = 600)
+	private String collectionType;
+
+	@Column(nullable = false, length = 600)
+	private String contentShape;
+
+	@Column(nullable = false, unique = true)
+	private String code;
+
+	@CreationTimestamp
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	private LocalDateTime updatedAt;
+
+	public EntTemplate() {
+		super();
+	}
+
+	public EntTemplate(com.entando.template.persistence.entity.EntTemplate entity) {
+		this.id = entity.getId();
+		this.templateName = entity.getTemplateName();
+		this.code = entity.getCode();
+		this.collectionType = entity.getCollectionType();
+		this.contentShape = entity.getContentShape();
+	}
 
 	@Override
 	public int hashCode() {
@@ -84,7 +105,5 @@ public class EntTemplate {
 		return "EntTemplate [id=" + id + ", templateName=" + templateName + ", collectionType=" + collectionType
 				+ ", contentShape=" + contentShape + ", code=" + code + "]";
 	}
-
-    
 
 }
