@@ -11,10 +11,7 @@ class EtApp extends HTMLElement {
     }
 
     render() {
-        ReactDOM.render(<React.StrictMode>
-                    <App/>
-            </React.StrictMode>,
-            this.appendChild(this.mountPoint))
+        ReactDOM.render(<App/>,this.appendChild(this.mountPoint))
     }
 }
 
