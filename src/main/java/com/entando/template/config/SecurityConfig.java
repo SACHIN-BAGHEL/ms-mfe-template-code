@@ -1,4 +1,4 @@
-package com.entando.hub.catalog.config;
+package com.entando.template.config;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;

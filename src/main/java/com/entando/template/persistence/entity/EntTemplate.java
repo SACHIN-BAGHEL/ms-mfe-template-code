@@ -1,4 +1,4 @@
-package com.entando.hub.catalog.persistence.entity;
+package com.entando.template.persistence.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.entando.hub.catalog;
+package com.entando.template;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

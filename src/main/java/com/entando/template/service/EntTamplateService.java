@@ -1,4 +1,4 @@
-package com.entando.hub.catalog.service;
+package com.entando.template.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.entando.hub.catalog.persistence.EntTemplateRepository;
-import com.entando.hub.catalog.persistence.entity.EntTemplate;
+import com.entando.template.persistence.EntTemplateRepository;
+import com.entando.template.persistence.entity.EntTemplate;
 
 @Service
 public class EntTamplateService {
