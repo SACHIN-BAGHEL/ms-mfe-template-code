@@ -43,5 +43,18 @@ export const getData = async () => {
 }
 
 
-
+// checks if the input data contain an error and sends back either the error itself or the actual data
+export const checkForErrorsAndSendResponse = (data, isError, objectLabel) => {
+    if (isError) {
+        return {
+            errorBody: data,
+            isError,
+        }
+    } else {
+        return {
+            [objectLabel]: data,
+            isError,
+        }
+    }
+}
 
