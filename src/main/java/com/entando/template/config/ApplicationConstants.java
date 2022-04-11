@@ -26,4 +26,6 @@ public final class ApplicationConstants {
     public static final String TEMPLATE_SORT_PARAM_UPDATAED_AT = "updatedAt";
     public static final String TEMPLATE_SORT_PARAM_TEMPLATE_NAME = "templateName";
     
+    public static final short TEMPLATE_NAME_MAX_LENGTH = 50;
+
 }
