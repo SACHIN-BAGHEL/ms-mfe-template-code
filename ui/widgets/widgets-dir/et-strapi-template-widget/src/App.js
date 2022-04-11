@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import ContentTemplates from './pages/ConentTemplates';
 
 import './App.css';
+import AddContentTemplate from './pages/AddContentTemplate';
+import EditContentTemplate from './pages/EditContentTemplate';
 
 export default class App extends Component {
   render() {
@@ -12,8 +14,8 @@ export default class App extends Component {
             <BrowserRouter>
                 {/* <Route path="/" exact><Pagination /></Route> */}
                 <Route path="/" exact><ContentTemplates /></Route>
-                {/* <Route path="/add-template" exact><AddTemplate /></Route> */}
-                {/* <Route path="/edit-template/:templateId" exact><EditTemplate /></Route> */}
+                <Route path="/add-template" exact><AddContentTemplate /></Route>
+                <Route path="/edit-template/:templateId" exact><EditContentTemplate /></Route>
             </BrowserRouter>
       </div>
     )

@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
 // import { deleteTemplate, getTemplate } from '../api/Api'
-import { DropdownKebab, MenuItem } from 'patternfly-react';
+import { DropdownKebab, MenuItem, Spinner } from 'patternfly-react';
 import ModalUI from './ModalUI';
 import { withRouter } from "react-router-dom";
 import Pagination from './Pagination';
@@ -106,6 +106,17 @@ class TemplateDataTable extends Component {
 
         return (
             <div className="show-grid">
+                <Spinner
+                    className=""
+                    inline={false}
+                    inverse={false}
+                    loading={true}
+                    size="lg"
+                >
+                    <div>
+                        Look at me! I am loaded content!
+                    </div>
+                </Spinner>
                 <div className="col-lg-12">
                     <table className="table dataTable table-striped table-bordered table-hover">
                         <thead>
