@@ -3,7 +3,7 @@ import axios from "axios";
 import { getData } from "./Http";
 
 // endpoints
-const urlTemplates = `${process.env.REACT_APP_PUBLIC_API_URL}/template/`
+const urlTemplates = `${process.env.REACT_APP_PUBLIC_API_URL}/template/paged`
 const urlStrapi = `${process.env.STRAPI_APP_PUBLIC_API_URL}/`
 
 /*********************
@@ -13,13 +13,14 @@ const urlStrapi = `${process.env.STRAPI_APP_PUBLIC_API_URL}/`
 import { checkForErrorsAndSendResponse } from "./Integration"
 
 
-export const getAllTemplates = async () => {
-    const { data, isError } = await getData(urlTemplates)
+export const getAllTemplates = async (page, pageSize) => {
+    const url = `${urlTemplates}?page=${page}&pageSize=${pageSize}`;
+    const { data, isError } = await getData(url)
     // eventHandler(
     //     isError,
     //     `${i18n.t('toasterMessage.impossibleToLoadCategory')} ${data ? data.message : ""}`
     // )
-    return checkForErrorsAndSendResponse(data, isError, "categoryList")
+    return checkForErrorsAndSendResponse(data, isError, "templateList")
 }
 
 /*********************
@@ -36,10 +37,3 @@ export const getCollectionTypes = async () => {
     });
     return data;
 }
-
-//  export const getAllTemplates = async () => {
-//     const { data, isError } = await getData(urlTemplates)
-
-//     console.log("getAllTemplates", data);
-//     return checkForErrorsAndSendResponse(data, isError, "categoryList")
-// }
