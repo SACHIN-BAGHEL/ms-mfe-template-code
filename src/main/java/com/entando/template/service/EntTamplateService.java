@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.entando.template.config.ApplicationConstants;
 import com.entando.template.persistence.EntTemplateRepository;
 import com.entando.template.persistence.entity.EntTemplate;
 import com.entando.template.response.TemplateResponseView;
@@ -44,19 +45,27 @@ public class EntTamplateService {
 	 * @return
 	 */
 	public PagedContent<TemplateResponseView, EntTemplate> getFilteredTemplates(Integer pageNum,
-			Integer pageSize, String code) {
+			Integer pageSize, String sanitizedCollectionType) {
 		logger.debug("{}: getFilteredTemplates: Get templates in paginated manner", CLASS_NAME);
 		Pageable pageable;
+		Page<EntTemplate> page = null;
+
 		if (pageSize == 0) {
 			pageable = Pageable.unpaged();
 		} else {
 //			paging = PageRequest.of(pageNum, pageSize, Sort.by(new Sort.Order(Sort.Direction.ASC, "bundleGroup.name")).and(Sort.by("lastUpdated").descending()));
-			pageable = PageRequest.of(pageNum, pageSize,
-					Sort.by(new Sort.Order(Sort.Direction.ASC, "templateName")).and(Sort.by("updatedAt").descending()));
+			pageable = PageRequest.of(pageNum, pageSize, Sort.by(new Sort.Order(Sort.Direction.ASC, ApplicationConstants.TEMPLATE_SORT_PARAM_TEMPLATE_NAME))
+					.and(Sort.by(ApplicationConstants.TEMPLATE_SORT_PARAM_UPDATAED_AT).descending()));
 		}
-		Page<EntTemplate> page = templateRepository.findAll(pageable);
-		PagedContent<TemplateResponseView, EntTemplate> pagedContent = new PagedContent<>(
-				toResponseViewList(page), page);
+
+		//Check if search parameter is 'all/All/ALL'
+		if(sanitizedCollectionType.equalsIgnoreCase(ApplicationConstants.TEMPLATE_SEARCH_PARAM_ALL)) {
+			page = templateRepository.findAll(pageable);
+		} else {
+			page = templateRepository.findByCollectionType(sanitizedCollectionType, pageable);
+		}
+
+		PagedContent<TemplateResponseView, EntTemplate> pagedContent = new PagedContent<>(toResponseViewList(page), page);
 		return pagedContent;
 	}
 
@@ -65,8 +74,8 @@ public class EntTamplateService {
 	 * @param templateId
 	 * @return
 	 */
-	public Optional<EntTemplate> getTemplate(String templateId) {
-		return templateRepository.findById(Long.parseLong(templateId));
+	public Optional<EntTemplate> getTemplate(Long templateId) {
+		return templateRepository.findById(templateId);
 	}
 
 	/**
@@ -84,8 +93,8 @@ public class EntTamplateService {
 	 * 
 	 * @param templateId
 	 */
-	public void deleteTemplate(String templateId) {
-		templateRepository.deleteById(Long.valueOf(templateId));
+	public void deleteTemplate(Long templateId) {
+		templateRepository.deleteById(templateId);
 	}
 
 	/**
