@@ -5,7 +5,7 @@ package com.entando.template.config;
  */
 public final class ApplicationConstants {
     
-    public static final String TEMPLATE_DOES_NOT_EXIST_MSG = "This template does not exist.";
+    public static final String TEMPLATE_DOES_NOT_EXIST_MSG = "The template does not exist.";
     
     public static final String TEMPLATE_DELETED= "Template deleted successfully.";
     

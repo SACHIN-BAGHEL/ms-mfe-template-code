@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.entando.template.config.ApplicationConstants;
 import com.entando.template.persistence.EntTemplateRepository;
 import com.entando.template.persistence.entity.EntTemplate;
+import com.entando.template.request.TemplateRequestView;
 import com.entando.template.response.TemplateResponseView;
 import com.entando.template.util.PagedContent;
 
@@ -70,7 +71,7 @@ public class EntTamplateService {
 	}
 
 	/**
-	 * 
+	 * Get a template by id
 	 * @param templateId
 	 * @return
 	 */
@@ -87,6 +88,21 @@ public class EntTamplateService {
 		toSave.setCreatedAt(LocalDateTime.now());
 		toSave.setUpdatedAt(LocalDateTime.now());
 		return templateRepository.save(toSave);
+	}
+	
+	/**
+	 * Update a template
+	 * @param toUpdate
+	 * @param reqView
+	 * @return
+	 */
+	public EntTemplate updateTemplate(EntTemplate toUpdate, TemplateRequestView reqView) {
+		toUpdate.setCode(reqView.getCode());
+		toUpdate.setCollectionType(reqView.getCollectionType());
+		toUpdate.setContentShape(reqView.getContentShape());
+		toUpdate.setTemplateName(reqView.getTemplateName());
+		toUpdate.setUpdatedAt(LocalDateTime.now());
+		return templateRepository.save(toUpdate);
 	}
 
 	/**

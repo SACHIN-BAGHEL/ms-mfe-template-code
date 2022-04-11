@@ -6,15 +6,14 @@ import lombok.Data;
 
 @Data
 public class TemplateRequestView {
-	private Long id;
 	private String templateName;
 	private String collectionType;
 	private String contentShape;
 	private String code;
 
-	public EntTemplate createEntity(TemplateRequestView templateRequestView) {
+	public EntTemplate createEntity(TemplateRequestView templateRequestView, Long id) {
 		EntTemplate entity = new EntTemplate();
-		entity.setId(templateRequestView.getId());
+		entity.setId(id);
 		entity.setCode(templateRequestView.getCode());
 		entity.setCollectionType(templateRequestView.getCollectionType());
 		entity.setTemplateName(templateRequestView.getTemplateName());
