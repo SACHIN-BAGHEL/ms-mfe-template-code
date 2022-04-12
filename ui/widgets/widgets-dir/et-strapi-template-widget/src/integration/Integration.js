@@ -2,8 +2,8 @@ import axios from "axios";
 
 let endpoint = `${process.env.STRAPI_APP_URL}`
 
-const addAuthorizationRequestConfig = (config = {}) => {
-    let defaultOptions = getDefaultOptions();
+export const addAuthorizationRequestConfig = (config = {}, defaultBearer = 'Bearer') => {
+    let defaultOptions = getDefaultOptions(defaultBearer);
     return {
         ...config,
         ...defaultOptions
@@ -12,28 +12,28 @@ const addAuthorizationRequestConfig = (config = {}) => {
 
 const getKeycloakToken = () => {
     if (window && window.entando && window.entando.keycloak && window.entando.keycloak.authenticated) {
+        console.log('checking token', window.entando.keycloak.token);
         return window.entando.keycloak.token
     }
     return ''
 }
 
 
-const getDefaultOptions = () => {
+const getDefaultOptions = (defaultBearer) => {
     const token = getKeycloakToken()
     if (!token) return {}
     return {
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `${defaultBearer} ${token}`,
         },
     }
 }
-
 
 export const getData = async () => {
     const responseObj = {}
     try {
         endpoint = `http://localhost:1337/api/banners?filters[id][$eq]=1`
-        responseObj["response"] = await axios.get(endpoint, addAuthorizationRequestConfig())
+        responseObj["response"] = await axios.get(endpoint, addAuthorizationRequestConfig({}, 'EntKcToken'))
         console.log('responseObj["response"]', responseObj["response"].data.data);
     } catch (error) {
         console.error(error)

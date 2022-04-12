@@ -1,10 +1,11 @@
 import axios from "axios";
+import { addAuthorizationRequestConfig } from "./Integration";
 
 export const getData = async (url, id) => {
     url = mergeUrl(url, id)
 
     const data = await axios
-        .get(url)
+        .get(url, addAuthorizationRequestConfig())
         .then((res) => {
             return res.data
         })
