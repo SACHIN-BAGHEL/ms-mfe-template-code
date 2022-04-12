@@ -9,10 +9,8 @@ export default class TemplateSearch extends Component {
         };
     }
 
-
     componentDidMount = async () => {
         const collectionTypeList = await getCollectionTypes();
-        console.log("collectionTypeList",collectionTypeList);
     }
 
     render() {
@@ -26,12 +24,12 @@ export default class TemplateSearch extends Component {
                         </div>
                         <div className="show-grid row" style={{ height: "3.2rem" }}>
                             <div className="col-lg-1"></div>
-                            <div
-                                className="col-lg-1"
-                                style={{ fontSize: "larger", fontWeight: "600", position: "relative", top: "50%", transform: "translateY(-50%)", }}
-                            >Type</div>
+                            <div className="col-lg-1"
+                                style={{ fontSize: "larger", fontWeight: "600", position: "relative", top: "50%", transform: "translateY(-50%)", }}>
+                                Type
+                            </div>
                             <select className="col-lg-7" name="cars" id="cars" style={{ height: "100%", marginLeft: '2rem' }}>
-                                <option value="volvo">BC</option>
+                                <option value="volvo">PBC</option>
                                 <option value="saab">Saab</option>
                                 <option value="opel">Opel</option>
                                 <option value="audi">Audi</option>
