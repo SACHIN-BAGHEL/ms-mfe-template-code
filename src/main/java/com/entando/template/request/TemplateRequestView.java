@@ -1,6 +1,5 @@
 package com.entando.template.request;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -24,6 +23,8 @@ public class TemplateRequestView {
 	@NotEmpty(message = "code is mandatory field")
 	private String code;
 
+	private String styleSheet;
+
 	public EntTemplate createEntity(TemplateRequestView templateRequestView, Long id) {
 		EntTemplate entity = new EntTemplate();
 		entity.setId(id);
@@ -31,6 +32,7 @@ public class TemplateRequestView {
 		entity.setCollectionType(templateRequestView.getCollectionType());
 		entity.setTemplateName(templateRequestView.getTemplateName());
 		entity.setContentShape(templateRequestView.getContentShape());
+		entity.setStyleSheet(templateRequestView.getStyleSheet());
 		return entity;
 	}
 }

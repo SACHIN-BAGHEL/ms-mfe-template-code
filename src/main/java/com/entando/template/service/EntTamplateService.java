@@ -99,8 +99,9 @@ public class EntTamplateService {
 	public EntTemplate updateTemplate(EntTemplate toUpdate, TemplateRequestView reqView) {
 		toUpdate.setCode(reqView.getCode());
 		toUpdate.setCollectionType(reqView.getCollectionType());
-		toUpdate.setContentShape(reqView.getContentShape());
 		toUpdate.setTemplateName(reqView.getTemplateName());
+		toUpdate.setContentShape(reqView.getContentShape());
+		toUpdate.setStyleSheet(reqView.getStyleSheet());
 		toUpdate.setUpdatedAt(LocalDateTime.now());
 		return templateRepository.save(toUpdate);
 	}
@@ -129,6 +130,7 @@ public class EntTamplateService {
 			viewObj.setCollectionType(entity.getCollectionType());
 			viewObj.setTemplateName(entity.getTemplateName());
 			viewObj.setContentShape(entity.getContentShape());
+			viewObj.setStyleSheet(entity.getStyleSheet());
 			viewObj.setCreatedAt(entity.getCreatedAt());
 			viewObj.setUpdatedAt(entity.getUpdatedAt());
 
