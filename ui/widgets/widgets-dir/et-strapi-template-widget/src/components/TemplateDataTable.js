@@ -21,7 +21,8 @@ class TemplateDataTable extends Component {
             totalItems: 20,
             lastPage: 4,
             pageInput: 1,
-            pageChangeValue: 1
+            pageChangeValue: 1,
+            // todo message No Template to show.
         };
     }
 
