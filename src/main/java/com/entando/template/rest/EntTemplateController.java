@@ -5,7 +5,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +24,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entando.template.config.ApplicationConstants;
+import com.entando.template.persistence.entity.EntTemplate;
+import com.entando.template.request.TemplateRequestView;
 import com.entando.template.response.TemplateResponseView;
 import com.entando.template.service.EntTamplateService;
 import com.entando.template.util.PagedContent;
 
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.Data;
 
 /**
  * Controller class to perform CRUD for template
@@ -35,7 +38,6 @@ import lombok.Data;
  * @author akhilesh
  *
  */
-
 @RestController
 @RequestMapping("/api/template")
 public class EntTemplateController {
@@ -56,25 +58,25 @@ public class EntTemplateController {
 	@Operation(summary = "Get all the templates", description = "Public api, no authentication required.")
 	@GetMapping("/paged")
 	@RolesAllowed({ ApplicationConstants.ADMIN })
-	public PagedContent<TemplateResponseView, com.entando.template.persistence.entity.EntTemplate> getFilteredTemplates(
-			@RequestParam Integer page, @RequestParam Integer pageSize, @RequestParam(required = false) String code) {
+	public PagedContent<TemplateResponseView, EntTemplate> getFilteredTemplates(
+			@RequestParam Integer page, @RequestParam Integer pageSize, @RequestParam(required = false) String collectionType) {
 		logger.debug("REST request to get paginated templates");
 		Integer sanitizedPageNum = page >= 1 ? page - 1 : 0;
+		String sanitizedCollectionType = StringUtils.isEmpty(collectionType) ? ApplicationConstants.TEMPLATE_SEARCH_PARAM_ALL : collectionType.trim();
 
-		PagedContent<TemplateResponseView, com.entando.template.persistence.entity.EntTemplate> pagedContent = entTamplateService
-				.getFilteredTemplates(sanitizedPageNum, pageSize, code);
+		PagedContent<TemplateResponseView, EntTemplate> pagedContent = entTamplateService
+				.getFilteredTemplates(sanitizedPageNum, pageSize, sanitizedCollectionType);
 		return pagedContent;
 	}
 
 	@Operation(summary = "Get the template details by id", description = "Public api, no authentication required.")
 	@GetMapping("/{templateId}")
 	@RolesAllowed({ ApplicationConstants.ADMIN })
-	public ResponseEntity<EntTemplate> getEntTemplate(@PathVariable String templateId) {
+	public ResponseEntity<TemplateResponseView> getTemplate(@PathVariable Long templateId) {
 		logger.debug("REST request to get EntTemplate Id: {}", templateId);
-		Optional<com.entando.template.persistence.entity.EntTemplate> EntTemplateOptional = entTamplateService
-				.getTemplate(templateId);
-		if (EntTemplateOptional.isPresent()) {
-			return new ResponseEntity<>(EntTemplateOptional.map(EntTemplate::new).get(), HttpStatus.OK);
+		Optional<EntTemplate> entTemplateOptional = entTamplateService.getTemplate(templateId);
+		if (entTemplateOptional.isPresent()) {
+			return new ResponseEntity<>(entTemplateOptional.map(TemplateResponseView::new).get(), HttpStatus.OK);
 		} else {
 			logger.warn("Requested template '{}' does not exists", templateId);
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -84,80 +86,38 @@ public class EntTemplateController {
 	@Operation(summary = "Create a new template", description = "Public api, no authentication required.")
 	@PostMapping("/")
 	@RolesAllowed({ ApplicationConstants.ADMIN })
-	public ResponseEntity<EntTemplate> createEntTemplate(@RequestBody EntTemplate entTemplate) {
-		logger.debug("REST request to create EntTemplate: {}", entTemplate);
-		com.entando.template.persistence.entity.EntTemplate entity = entTamplateService
-				.createTemplate(entTemplate.createEntity(Optional.empty()));
-		return new ResponseEntity<>(new EntTemplate(entity), HttpStatus.CREATED);
+	public ResponseEntity<TemplateResponseView> createEntTemplate(@Valid @RequestBody TemplateRequestView templateReqView) {
+		logger.debug("REST request to create EntTemplate: {}", templateReqView);
+		EntTemplate entity = entTamplateService.createTemplate(templateReqView.createEntity(templateReqView, null));
+		return new ResponseEntity<>(new TemplateResponseView(entity), HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "Update a template", description = "Public api, no authentication required.")
-	@PutMapping("/")
+	@PutMapping("/{templateId}")
 	@RolesAllowed({ ApplicationConstants.ADMIN })
-	public ResponseEntity<EntTemplate> updateEntTemplate(@RequestBody EntTemplate template) {
-		logger.debug("REST request to update EntTemplate {}: {}", template.getId());
-		Optional<com.entando.template.persistence.entity.EntTemplate> templateOptional = entTamplateService
-				.getTemplate(template.getId());
+	public ResponseEntity<TemplateResponseView> updateEntTemplate(@Valid @RequestBody TemplateRequestView reqView, @PathVariable Long templateId) {
+		logger.debug("REST request to update EntTemplate {}: {}", templateId);
+		Optional<EntTemplate> templateOptional = entTamplateService.getTemplate(templateId);
 		if (!templateOptional.isPresent()) {
-			logger.warn("Template '{}' does not exists", template.getId());
+			logger.warn("Template '{}' does not exists", templateId);
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		} else {
-			com.entando.template.persistence.entity.EntTemplate updatedEntity = entTamplateService
-					.createTemplate(templateOptional.get());
-			return new ResponseEntity<>(new EntTemplate(updatedEntity), HttpStatus.OK);
+			EntTemplate updatedEntity = entTamplateService.updateTemplate(templateOptional.get(), reqView);
+			return new ResponseEntity<>(new TemplateResponseView(updatedEntity), HttpStatus.OK);
 		}
 	}
 
 	@Operation(summary = "Delete a template", description = "Public api, no authentication required.")
 	@DeleteMapping("/{templateId}")
 	@RolesAllowed({ ApplicationConstants.ADMIN })
-	public ResponseEntity<String> deleteEntTemplate(@PathVariable String templateId) {
+	public ResponseEntity<String> deleteEntTemplate(@PathVariable Long templateId) {
 		logger.debug("REST request to delete template {}", templateId);
-		Optional<com.entando.template.persistence.entity.EntTemplate> EntTemplateOptional = entTamplateService
-				.getTemplate(templateId);
-		if (!EntTemplateOptional.isPresent()) {
+		Optional<EntTemplate> entTemplateOptional = entTamplateService.getTemplate(templateId);
+		if (!entTemplateOptional.isPresent()) {
 			logger.warn("Requested template '{}' does not exists", templateId);
-			return new ResponseEntity<>(ApplicationConstants.TEMPLATE_NOT_EXIST_MSG, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(ApplicationConstants.TEMPLATE_DOES_NOT_EXIST_MSG, HttpStatus.NOT_FOUND);
 		}
 		entTamplateService.deleteTemplate(templateId);
 		return new ResponseEntity<>(ApplicationConstants.TEMPLATE_DELETED, HttpStatus.OK);
 	}
-
-	@Data
-	public static class EntTemplate {
-		protected String id;
-		protected String templateName;
-		protected String collectionType;
-		protected String contentShape;
-		protected String code;
-
-		public EntTemplate(String id, String templateName, String collectionType, String code, String contentShape) {
-			this.id = id;
-			this.templateName = templateName;
-			this.code = code;
-			this.collectionType = collectionType;
-			this.contentShape = contentShape;
-
-		}
-
-		public EntTemplate(com.entando.template.persistence.entity.EntTemplate entity) {
-			this.id = String.valueOf(entity.getId());
-			this.templateName = entity.getTemplateName();
-			this.code = entity.getCode();
-			this.collectionType = entity.getCollectionType();
-			this.contentShape = entity.getContentShape();
-		}
-
-		public com.entando.template.persistence.entity.EntTemplate createEntity(Optional<String> id) {
-			com.entando.template.persistence.entity.EntTemplate entity = new com.entando.template.persistence.entity.EntTemplate();
-			id.map(Long::valueOf).ifPresent(entity::setId);
-			entity.setCode(this.code);
-			entity.setCollectionType(this.collectionType);
-			entity.setTemplateName(this.templateName);
-			entity.setContentShape(this.contentShape);
-			return entity;
-		}
-
-	}
-
 }
