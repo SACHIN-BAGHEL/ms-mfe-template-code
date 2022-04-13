@@ -29,11 +29,16 @@ export const getAllTemplates = async (page, pageSize, selectedCollectionType) =>
 // todo make this method more generic or use the generic method like template declare url in env || const file.
 const strapiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ5NzU5MTIxLCJleHAiOjE2NTIzNTExMjF9.H8uKYT4mYNOSTs6gde9BVUYOxXI3H_Q94vBppPac1Es';
 
+// export const getCollectionTypes = async () => {
+//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
+//         headers: {
+//             'Authorization': `Bearer ${strapiToken}`
+//         }
+//     });
+//     return data;
+// }
+
 export const getCollectionTypes = async () => {
-    const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
-        headers: {
-            'Authorization': `Bearer ${strapiToken}`
-        }
-    });
+    const data = await axios.get(`http://localhost:1337/content-manager/content-types`, addAuthorizationRequestConfig({}, 'EntKcToken'));
     return data;
 }

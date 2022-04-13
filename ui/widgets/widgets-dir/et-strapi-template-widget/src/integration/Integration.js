@@ -28,17 +28,17 @@ const getDefaultOptions = (defaultBearer) => {
     }
 }
 
-export const getData = async () => {
-    const responseObj = {}
-    try {
-        endpoint = `http://localhost:1337/api/banners?filters[id][$eq]=1`
-        responseObj["response"] = await axios.get(endpoint, addAuthorizationRequestConfig({}, 'EntKcToken'))
-    } catch (error) {
-        console.error(error)
-        responseObj["error"] = error
-    }
-    return responseObj
-}
+// export const getData = async () => {
+//     const responseObj = {}
+//     try {
+//         endpoint = `http://localhost:1337/api/banners?filters[id][$eq]=1`
+//         responseObj["response"] = await axios.get(endpoint, addAuthorizationRequestConfig({}, 'EntKcToken'))
+//     } catch (error) {
+//         console.error(error)
+//         responseObj["error"] = error
+//     }
+//     return responseObj
+// }
 
 
 // checks if the input data contain an error and sends back either the error itself or the actual data
