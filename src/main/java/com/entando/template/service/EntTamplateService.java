@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.entando.template.config.ApplicationConstants;
+import com.entando.template.exception.DuplicateTemplateCodeException;
 import com.entando.template.persistence.EntTemplateRepository;
 import com.entando.template.persistence.entity.EntTemplate;
 import com.entando.template.request.TemplateRequestView;
@@ -84,7 +85,10 @@ public class EntTamplateService {
 	 * @param toSave
 	 * @return
 	 */
-	public EntTemplate createTemplate(EntTemplate toSave) {
+	public EntTemplate createTemplate(EntTemplate toSave) throws DuplicateTemplateCodeException {
+		if(templateRepository.existsByCode(toSave.getCode().trim())) {
+			throw new DuplicateTemplateCodeException(ApplicationConstants.TEMPLATE_ALREADY_EXISTS_ERR_MSG);
+		}
 		toSave.setCreatedAt(LocalDateTime.now());
 		toSave.setUpdatedAt(LocalDateTime.now());
 		return templateRepository.save(toSave);
