@@ -5,8 +5,9 @@ import ModalUI from './ModalUI';
 import { withRouter } from "react-router-dom";
 import PaginationRow from 'patternfly-react/dist/js/components/Pagination/PaginationRow';
 import { getAllTemplates } from '../integration/Template';
+import { LASTPAGE, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS } from '../constant/constant';
 
-const perPageOptions = [5, 10, 15, 25, 50];
+const perPageOptions = PERPAGEOPTIONS;
 
 class TemplateDataTable extends Component {
     constructor(props) {
@@ -16,12 +17,12 @@ class TemplateDataTable extends Component {
             modalShow: false,
             loading: true,
             selectedTempate: null,
-            page: 1,
-            pageSize: 5,
-            totalItems: 20,
-            lastPage: 4,
-            pageInput: 1,
-            pageChangeValue: 1,
+            page: PAGE,
+            pageSize: PAGESIZE,
+            totalItems: TOTALITEMS,
+            lastPage: LASTPAGE,
+            pageInput: PAGEINPUT,
+            pageChangeValue: PAGECHANGEVALUE,
             // todo message No Template to show.
         };
     }
