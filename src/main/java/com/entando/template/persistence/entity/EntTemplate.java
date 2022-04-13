@@ -31,7 +31,8 @@ public class EntTemplate {
 	@Column(nullable = false, length = 600)
 	private String contentShape;
 
-	@Column(nullable = false, unique = true)
+//	@Column(nullable = false, unique = true)
+	@Column(nullable = true, unique = false)
 	private String code;
 
 	@Column(nullable = true)

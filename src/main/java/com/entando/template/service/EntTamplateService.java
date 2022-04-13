@@ -1,7 +1,9 @@
 package com.entando.template.service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,9 +88,15 @@ public class EntTamplateService {
 	 * @return
 	 */
 	public EntTemplate createTemplate(EntTemplate toSave) throws DuplicateTemplateCodeException {
-		if(templateRepository.existsByCode(toSave.getCode().trim())) {
-			throw new DuplicateTemplateCodeException(ApplicationConstants.TEMPLATE_ALREADY_EXISTS_ERR_MSG);
-		}
+//		if(templateRepository.existsByCode(toSave.getCode().trim())) {
+//			throw new DuplicateTemplateCodeException(ApplicationConstants.TEMPLATE_ALREADY_EXISTS_ERR_MSG);
+//		}
+		//Temporary code
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+		String string  = dateFormat.format(new Date());
+		System.out.println(string);
+		toSave.setCode(string);
+
 		toSave.setCreatedAt(LocalDateTime.now());
 		toSave.setUpdatedAt(LocalDateTime.now());
 		return templateRepository.save(toSave);
