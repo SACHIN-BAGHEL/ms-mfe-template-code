@@ -20,7 +20,7 @@ public class TemplateRequestView {
 
 	private String contentShape;
 
-	@NotEmpty(message = "code is mandatory field")
+//	@NotEmpty(message = "code is mandatory field")
 	private String code;
 
 	private String styleSheet;
