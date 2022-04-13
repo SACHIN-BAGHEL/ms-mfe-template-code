@@ -12,7 +12,7 @@ public interface EntTemplateRepository extends JpaRepository<EntTemplate, Long> 
 	 * Find all templates paginated
 	 */
 	Page<EntTemplate> findAll(Pageable pageable);
-	
+
 	/**
 	 * Find all templates by collectionType in paginated manner
 	 * @param code
@@ -20,5 +20,12 @@ public interface EntTemplateRepository extends JpaRepository<EntTemplate, Long> 
 	 * @return
 	 */
 	Page<EntTemplate> findByCollectionType(String collectionType, Pageable pageable);
+
+	/**
+	 * Check if a template already exists by code
+	 * @param code
+	 * @return
+	 */
+	boolean existsByCode(String code);
 
 }

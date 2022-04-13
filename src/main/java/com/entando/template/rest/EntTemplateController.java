@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entando.template.config.ApplicationConstants;
+import com.entando.template.exception.DuplicateTemplateCodeException;
+import com.entando.template.exception.TemplateNotFoundException;
 import com.entando.template.persistence.entity.EntTemplate;
 import com.entando.template.request.TemplateRequestView;
 import com.entando.template.response.TemplateResponseView;
@@ -79,7 +81,7 @@ public class EntTemplateController {
 			return new ResponseEntity<>(entTemplateOptional.map(TemplateResponseView::new).get(), HttpStatus.OK);
 		} else {
 			logger.warn("Requested template '{}' does not exists", templateId);
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new TemplateNotFoundException(String.format(ApplicationConstants.TEMPLATE_NOT_FOUND_ERR_MSG, templateId));
 		}
 	}
 
@@ -88,22 +90,34 @@ public class EntTemplateController {
 	@RolesAllowed({ ApplicationConstants.ADMIN })
 	public ResponseEntity<TemplateResponseView> createEntTemplate(@Valid @RequestBody TemplateRequestView templateReqView) {
 		logger.debug("REST request to create EntTemplate: {}", templateReqView);
-		EntTemplate entity = entTamplateService.createTemplate(templateReqView.createEntity(templateReqView, null));
-		return new ResponseEntity<>(new TemplateResponseView(entity), HttpStatus.CREATED);
+		try {
+			EntTemplate entity = entTamplateService.createTemplate(templateReqView.createEntity(templateReqView, null));
+			return new ResponseEntity<>(new TemplateResponseView(entity), HttpStatus.CREATED);
+		} catch (DuplicateTemplateCodeException dupEx) {
+			throw new DuplicateTemplateCodeException(dupEx.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 
 	@Operation(summary = "Update a template", description = "Public api, no authentication required.")
 	@PutMapping("/{templateId}")
 	@RolesAllowed({ ApplicationConstants.ADMIN })
-	public ResponseEntity<TemplateResponseView> updateEntTemplate(@Valid @RequestBody TemplateRequestView reqView, @PathVariable Long templateId) {
+	public ResponseEntity<TemplateResponseView> updateTemplate(@Valid @RequestBody TemplateRequestView reqView, @PathVariable Long templateId) {
 		logger.debug("REST request to update EntTemplate {}: {}", templateId);
-		Optional<EntTemplate> templateOptional = entTamplateService.getTemplate(templateId);
-		if (!templateOptional.isPresent()) {
-			logger.warn("Template '{}' does not exists", templateId);
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		} else {
-			EntTemplate updatedEntity = entTamplateService.updateTemplate(templateOptional.get(), reqView);
-			return new ResponseEntity<>(new TemplateResponseView(updatedEntity), HttpStatus.OK);
+		try {
+			Optional<EntTemplate> templateOptional = entTamplateService.getTemplate(templateId);
+			if (!templateOptional.isPresent()) {
+				logger.warn("Template '{}' does not exists", templateId);
+				throw new TemplateNotFoundException(String.format(ApplicationConstants.TEMPLATE_NOT_FOUND_ERR_MSG, templateId));
+			} else {
+				EntTemplate updatedEntity = entTamplateService.updateTemplate(templateOptional.get(), reqView);
+				return new ResponseEntity<>(new TemplateResponseView(updatedEntity), HttpStatus.OK);
+			}
+		} catch (TemplateNotFoundException e) {
+			throw new TemplateNotFoundException(e.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
 		}
 	}
 
@@ -112,12 +126,18 @@ public class EntTemplateController {
 	@RolesAllowed({ ApplicationConstants.ADMIN })
 	public ResponseEntity<String> deleteEntTemplate(@PathVariable Long templateId) {
 		logger.debug("REST request to delete template {}", templateId);
-		Optional<EntTemplate> entTemplateOptional = entTamplateService.getTemplate(templateId);
-		if (!entTemplateOptional.isPresent()) {
-			logger.warn("Requested template '{}' does not exists", templateId);
-			return new ResponseEntity<>(ApplicationConstants.TEMPLATE_DOES_NOT_EXIST_MSG, HttpStatus.NOT_FOUND);
+		try {
+			Optional<EntTemplate> entTemplateOptional = entTamplateService.getTemplate(templateId);
+			if (!entTemplateOptional.isPresent()) {
+				logger.warn("Requested template '{}' does not exists", templateId);
+				throw new TemplateNotFoundException(String.format(ApplicationConstants.TEMPLATE_NOT_FOUND_ERR_MSG, templateId));
+			}
+			entTamplateService.deleteTemplate(templateId);
+			return new ResponseEntity<>(ApplicationConstants.TEMPLATE_DELETED_MSG, HttpStatus.OK);
+		} catch (TemplateNotFoundException e) {
+			throw new TemplateNotFoundException(e.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
 		}
-		entTamplateService.deleteTemplate(templateId);
-		return new ResponseEntity<>(ApplicationConstants.TEMPLATE_DELETED, HttpStatus.OK);
 	}
 }
