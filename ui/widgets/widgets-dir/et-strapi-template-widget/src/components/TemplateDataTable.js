@@ -40,12 +40,16 @@ class TemplateDataTable extends Component {
     }
 
     componentDidMount = async () => {
-        await this.getTemplates();
+        await this.getTemplates(this.props.selectedCollectionType);
     }
 
     componentDidUpdate = async (prevProps, prevState) => {
-        if (prevState.page !== this.state.page || prevState.pageSize !== this.state.pageSize) {
-            await this.getTemplates();
+        if (prevProps.selectedCollectionType !== this.props.selectedCollectionType || 
+            prevState.pageSize !== this.state.pageSize) {
+            await this.getTemplates(this.props.selectedCollectionType, true);
+        }
+        if (prevState.page !== this.state.page) {
+            await this.getTemplates(this.props.selectedCollectionType);
         }
     }
 
@@ -58,8 +62,8 @@ class TemplateDataTable extends Component {
         });
     }
 
-    async getTemplates() {
-        const data = await getAllTemplates(this.state.page, this.state.pageSize);
+    async getTemplates(selectedCollectionType, shouldInitPage = false) {
+        const data = await getAllTemplates(shouldInitPage ? 1 : this.state.page, this.state.pageSize, selectedCollectionType);
         if (data || !isError) {
             const { payload } = data.templateList;
             const { lastPage, page, pageSize, totalItems } = data.templateList.metadata;

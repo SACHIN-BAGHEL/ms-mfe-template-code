@@ -12,7 +12,6 @@ export const addAuthorizationRequestConfig = (config = {}, defaultBearer = 'Bear
 
 const getKeycloakToken = () => {
     if (window && window.entando && window.entando.keycloak && window.entando.keycloak.authenticated) {
-        console.log('checking token', window.entando.keycloak.token);
         return window.entando.keycloak.token
     }
     return ''
@@ -34,7 +33,6 @@ export const getData = async () => {
     try {
         endpoint = `http://localhost:1337/api/banners?filters[id][$eq]=1`
         responseObj["response"] = await axios.get(endpoint, addAuthorizationRequestConfig({}, 'EntKcToken'))
-        console.log('responseObj["response"]', responseObj["response"].data.data);
     } catch (error) {
         console.error(error)
         responseObj["error"] = error

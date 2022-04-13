@@ -5,13 +5,24 @@ export default class TemplateSearch extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            collectionType: []
+            collectionType: [],
+            selectedCollectionType: "All"
         };
     }
 
     componentDidMount = async () => {
-        const collectionTypeList = await getCollectionTypes();
+        this.getCollectionType();
     }
+
+    getCollectionType = async () => {
+        const { data: { data } } = await getCollectionTypes();
+        if (data.length) {
+            const collectionListData = data.filter((el) => el.uid.startsWith('api::'));
+            this.setState({ collectionType: collectionListData });
+        }
+    }
+
+    collectionTypeOnChange = (event) => this.props.collectionTypeOnChange(event.target.value);
 
     render() {
         return (
@@ -28,11 +39,9 @@ export default class TemplateSearch extends Component {
                                 style={{ fontSize: "larger", fontWeight: "600", position: "relative", top: "50%", transform: "translateY(-50%)", }}>
                                 Type
                             </div>
-                            <select className="col-lg-7" name="cars" id="cars" style={{ height: "100%", marginLeft: '2rem' }}>
-                                <option value="volvo">PBC</option>
-                                <option value="saab">Saab</option>
-                                <option value="opel">Opel</option>
-                                <option value="audi">Audi</option>
+                            <select onChange={this.collectionTypeOnChange} className="col-lg-7" name="cars" id="cars" style={{ height: "100%", marginLeft: '2rem' }}>
+                                <option value="all">All</option>
+                                {this.state.collectionType.map(el => <option value={el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}>{el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}</option>)}
                             </select>
                         </div>
                         <div className="show-grid row" style={{ marginTop: "1rem" }}>
