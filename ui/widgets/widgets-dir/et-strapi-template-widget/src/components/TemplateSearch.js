@@ -41,7 +41,7 @@ export default class TemplateSearch extends Component {
                             </div>
                             <select onChange={this.collectionTypeOnChange} className="col-lg-7" name="cars" id="cars" style={{ height: "100%", marginLeft: '2rem' }}>
                                 <option value="all">All</option>
-                                {this.state.collectionType.map(el => <option value={el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}>{el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}</option>)}
+                                {this.state.collectionType.map(el => <option key={el.apiID} value={el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}>{el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}</option>)}
                             </select>
                         </div>
                         <div className="show-grid row" style={{ marginTop: "1rem" }}>
