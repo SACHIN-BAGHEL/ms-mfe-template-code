@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import ModalUI from './ModalUI';
 import AceEditor from 'react-ace';
+import { postData } from '../integration/Http';
+import { Link } from 'react-router-dom';
+import { addNewTemplate, getCollectionTypes } from '../integration/Template';
 
 export default class ContentTemplateForm extends Component {
 
@@ -10,15 +13,71 @@ export default class ContentTemplateForm extends Component {
         this.state = {
             code: '',
             name: '',
-            contentType: [],
+            //contentType: [],
+            selectedContentType:[],
             contentTypeProgram: '',
             collectionTypes: [],
+            styleSheet: '',
             modalShow: false,
+            obj:{}, 
         }
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.handleTypeaheadChangeContentType = this.handleTypeaheadChangeContentType.bind(this);
+        this.handleStyleChange = this.handleStyleChange.bind(this);
+        this.handleContentTypeProgram = this.handleContentTypeProgram.bind(this);
+    }
+
+    componentDidMount = async () => {
+        this.getCollectionType();
+    }
+
+    getCollectionType = async () => {
+        const { data: { data } } = await getCollectionTypes();
+        if (data.length) {
+            const collectionListData = data.filter((el) => {
+            if (el.uid.startsWith('api::')) {
+                return el.apiID;
+            }
+            });
+            const contentTypeRefine = [];
+            collectionListData.length && collectionListData.forEach(element => {
+                contentTypeRefine.push({ label: element.info.pluralName })
+            });
+            console.log('contentTypeRefine', contentTypeRefine);
+            this.setState({ collectionTypes: contentTypeRefine });
+        }
+
+
+        // let contentTypes = await getCollectionTypes();
+        // contentTypes = contentTypes.data.data.filter(obj => {
+        //     return obj && (obj.uid && obj.uid.startsWith("api::")) && obj.isDisplayed;
+        // });
+        // const contentTypeRefine = [];
+        // contentTypes.length && contentTypes.forEach(element => {
+        //     contentTypeRefine.push({ label: element.info.pluralName })
+        // });
+        // console.log('contentTypeRefine', contentTypeRefine);
     }
 
     handleSubmit = async (event) => {
-        // console.table(this.state);
+
+        
+
+        console.log("Submitted");
+        let obj = 
+        {
+            "collectionType": this.state.selectedContentType[0].label,
+            "templateName": this.state.name,
+            "contentShape": this.state.contentTypeProgram,
+            "code": "News7",
+            "styleSheet": this.state.styleSheet
+          }
+          this.props.addTemplateHandler(obj);
+          console.log(this.state.name);
+          console.log(this.state.styleSheet);
+          console.log(this.state.selectedContentType);
+         // console.log(this.state.collectionTypes);
+        console.log("King",this.state);
         event.preventDefault();
         // // API Call
         // const data = {
@@ -30,19 +89,37 @@ export default class ContentTemplateForm extends Component {
         // await postTemplate(data).then((res) => {
         //     this.props.history.push('/')
         // });
+        await addNewTemplate(obj).then((res) => {
+                console.log(res);
+            });
     }
 
     handleNameChange(event) {
         this.setState({ name: event.target.value })
+        
+    }
+
+    handleTypeaheadChangeContentType(event){
+        this.setState({selectedContentType: event});
+        console.log("Collection Type",this.state.selectedContentType);
+    }
+
+    handleContentTypeProgram(value){
+        this.setState({contentTypeProgram: value})
+    }
+
+    handleStyleChange(event){
+        this.setState({styleSheet: event.target.value});
     }
 
     modalHide = () => {
         this.setState({ modalShow: false });
     }
 
-    render() {
+    render() { 
+        console.log("LATEST", this.state);
         return (
-            <div className="formContainer show-grid">
+            <div className="formContainer show-grid" style={{marginRight:"12vw"}}>
                 <form onSubmit={this.handleSubmit}>
                     <div className="formContainer col-xs-12 form-group">
                         <div className="col-lg-2" style={{ textAlign: "end" }}>
@@ -65,7 +142,7 @@ export default class ContentTemplateForm extends Component {
                                 options={this.state.collectionTypes}
                                 // options={[{ label: 'Banner' }, { label: 'News' }, { label: '2 columns' }]}
                                 placeholder="Choose..."
-                                selected={this.state.contentType}
+                                selected={this.state.selectedContentType}
                             />
                         </div>
                     </div>
@@ -149,9 +226,11 @@ export default class ContentTemplateForm extends Component {
                                 mode="javascript"
                                 theme="github"
                                 onChange={this.handleContentTypeProgram}
+                                //onLoad={this.onEditorLoaded}
                                 name="UNIQUE_ID_OF_DIV"
                                 editorProps={{ $blockScrolling: true }}
                                 value={this.state.contentTypeProgram}
+                                style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
                             />
                         </div>
                     </div>
@@ -176,12 +255,23 @@ export default class ContentTemplateForm extends Component {
                                 id="id"
                                 placeholder=""
                                 className="form-control RenderTextInput"
-                                value={this.state.name}
-                                onChange={this.handleNameChange}
+                                value={this.state.styleSheet}
+                                onChange={this.handleStyleChange}
                             />
                         </div>
                     </div>
+                    <div className="formContainer col-xs-12">
+                            <div className="col-lg-10" style={{ textAlign: "end" }}>
+                            </div>
+                            <div className="col-lg-2">
+                                <Link to="/">
+                                    <button className="default-btn">Cancel</button>
+                                </Link>
+                                <button className="default-btn" type="submit">Save</button>
+                            </div>
+                        </div>
                 </form>
+                
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"}>
                     <span>
                         Provides an example on how to activate <strong>INLINE EDITING</strong> for Entando labels<br /><br />
