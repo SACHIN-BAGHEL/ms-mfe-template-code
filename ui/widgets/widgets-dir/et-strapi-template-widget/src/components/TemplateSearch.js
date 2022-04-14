@@ -22,7 +22,8 @@ export default class TemplateSearch extends Component {
         }
     }
 
-    collectionTypeOnChange = (event) => this.props.collectionTypeOnChange(event.target.value);
+    collectionTypeOnChange = (event) => this.setState({ selectedCollectionType: event.target.value });
+    collectionTypeOnClick = () => this.props.collectionTypeOnChange(this.state.selectedCollectionType);
 
     render() {
         return (
@@ -47,7 +48,7 @@ export default class TemplateSearch extends Component {
                         <div className="show-grid row" style={{ marginTop: "1rem" }}>
                             <div className="col-lg-7"></div>
                             <div className="col-lg-4" style={{ marginLeft: "5rem" }}>
-                                <button className="btn btn-primary">Search</button>
+                                <button onClick={this.collectionTypeOnClick} className="btn btn-primary">Search</button>
                             </div>
                         </div>
                     </div>
