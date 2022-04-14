@@ -9,7 +9,7 @@ import 'brace/snippets/html';
 import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
 import { addNewTemplate, getCollectionTypes } from '../integration/Template';
-import { getFields } from '../integration/StrapiAPI';
+import { getFields, getFieldsTwo } from '../integration/StrapiAPI';
 import { DICTIONARY, DICTMAPPED } from '../constant/constant';
 
 const langTools = ace.acequire('ace/ext/language_tools');
@@ -53,6 +53,7 @@ export default class ContentTemplateForm extends Component {
             dictList: [],
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
+            attributesList: []
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTypeaheadChangeContentType = this.handleTypeaheadChangeContentType.bind(this);
@@ -67,6 +68,7 @@ export default class ContentTemplateForm extends Component {
     getCollectionType = async () => {
         const { data: { data } } = await getCollectionTypes();
         if (data && data.length) {
+            this.getDataTypeOfAttribute(data);
             const collectionListData = data.filter((el) => {
             if (el.uid.startsWith('api::')) {
                 return el.apiID;
@@ -76,8 +78,8 @@ export default class ContentTemplateForm extends Component {
             collectionListData.length && collectionListData.forEach(element => {
                 contentTypeRefine.push({ label: element.info.pluralName })
             });
-            const dataTwo = await getFields(contentTypeRefine[0].label.slice(contentTypeRefine[0].label, contentTypeRefine[0].label.length - 1));
-            this.setState({ dictMapped: dataTwo })
+            const fieldsData = await getFields(contentTypeRefine[0].label.slice(contentTypeRefine[0].label, contentTypeRefine[0].label.length - 1));
+            this.setState({ dictMapped: fieldsData })
             this.setState({ collectionTypes: contentTypeRefine });
         }
     }
@@ -106,6 +108,18 @@ export default class ContentTemplateForm extends Component {
         await addNewTemplate(obj).then((res) => {
                 console.log(res);
             });
+    }
+
+    getDataTypeOfAttribute(data) {
+        data.map(el => {
+            if (el.uid.startsWith('api::')) {
+                let refine = [];
+                for (let attr in el.attributes) {
+                    refine.push({ [attr]: el.attributes[attr]['type'] });
+                }
+                this.setState({attributesList: refine})
+            }
+        });
     }
 
     handleNameChange(event) {
@@ -303,7 +317,6 @@ export default class ContentTemplateForm extends Component {
     }
 
     render() { 
-        console.log("LATEST", this.state);
         return (
             <div className="formContainer show-grid" style={{marginRight:"12vw"}}>
                 <form onSubmit={this.handleSubmit}>
@@ -377,16 +390,7 @@ export default class ContentTemplateForm extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>question</td>
-                                        <td>Hypertext</td>
-                                        {/* <td>-</td> */}
-                                    </tr>
-                                    <tr>
-                                        <td>answer</td>
-                                        <td>Hypertext</td>
-                                        {/* <td>-</td> */}
-                                    </tr>
+                                    {this.state.attributesList.map(el => (<tr><td>{Object.keys(el)[0]}</td><td>{el[Object.keys(el)[0]]}</td></tr>))}
                                 </tbody>
                             </table>
                         </div>

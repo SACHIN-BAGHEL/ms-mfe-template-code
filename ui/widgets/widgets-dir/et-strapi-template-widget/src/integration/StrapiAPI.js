@@ -23,3 +23,14 @@ export const getFields = async (contentType) => {
     console.log("TIMEPASS",timepass)
     return timepass;
 }
+
+export const getFieldsTwo = async (contentType) => {
+    // const contentType = 'project'
+    const { data } = await axios.get(`http://localhost:1337/content-manager/collection-types/api::${contentType}.${contentType}?page=1&pageSize=10&sort=Title:ASC`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return data;
+}
