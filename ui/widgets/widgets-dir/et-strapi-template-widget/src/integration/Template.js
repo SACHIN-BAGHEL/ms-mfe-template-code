@@ -59,3 +59,8 @@ export const getCollectionTypes = async () => {
     });
     return data;
 }
+
+// export const getCollectionTypes = async () => {
+//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, addAuthorizationRequestConfig({}, 'EntKcToken'));
+//     return data;
+// }
