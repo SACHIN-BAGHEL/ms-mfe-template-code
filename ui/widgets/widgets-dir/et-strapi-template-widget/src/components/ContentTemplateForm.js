@@ -186,19 +186,20 @@ export default class ContentTemplateForm extends Component {
                                     <tr>
                                         <th>Code</th>
                                         <th>Type</th>
-                                        <th>Roles</th>
+                                        {/* TODO: Hided Roles for time being. */}
+                                        {/* <th>Roles</th> */}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>question</td>
                                         <td>Hypertext</td>
-                                        <td>-</td>
+                                        {/* <td>-</td> */}
                                     </tr>
                                     <tr>
                                         <td>answer</td>
                                         <td>Hypertext</td>
-                                        <td>-</td>
+                                        {/* <td>-</td> */}
                                     </tr>
                                 </tbody>
                             </table>
