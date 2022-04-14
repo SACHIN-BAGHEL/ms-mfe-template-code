@@ -2,9 +2,37 @@ import React, { Component } from 'react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import ModalUI from './ModalUI';
 import AceEditor from 'react-ace';
-import { postData } from '../integration/Http';
+import ace from 'brace';
+import 'brace/mode/html';
+import 'brace/theme/tomorrow';
+import 'brace/snippets/html';
+import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
 import { addNewTemplate, getCollectionTypes } from '../integration/Template';
+import { getFields } from '../integration/StrapiAPI';
+import { DICTIONARY, DICTMAPPED } from '../constant/constant';
+
+const langTools = ace.acequire('ace/ext/language_tools');
+const tokenUtils = ace.acequire('ace/autocomplete/util');
+const { textCompleter, keyWordCompleter, snippetCompleter } = langTools;
+const defaultCompleters = [textCompleter, keyWordCompleter, snippetCompleter];
+
+const escChars = term => term.replace('$', '\\$').replace('#', '\\#');
+const isAttribFunction = term => /[a-zA-Z]+\([^)]*\)(\.[^)]*\))?/g.test(term);
+
+const createSuggestionItem = (key, namespace, lvl = 0, meta = '') => ({
+  caption: key,
+  value: key,
+  score: 10000 + lvl,
+  meta: meta || `${namespace} Object ${isAttribFunction(key) ? 'Method' : 'Property'}`,
+});
+
+const aceOnBlur = onBlur => (_event, editor) => {
+    if (editor) {
+        const value = editor.getValue();
+        onBlur(value);
+    }
+};
 
 export default class ContentTemplateForm extends Component {
 
@@ -13,13 +41,18 @@ export default class ContentTemplateForm extends Component {
         this.state = {
             code: '',
             name: '',
-            //contentType: [],
             selectedContentType:[],
             contentTypeProgram: '',
             collectionTypes: [],
             styleSheet: '',
             modalShow: false,
             obj:{}, 
+            editor: null,
+            dictionaryLoaded: false,
+            dictionary: DICTIONARY,
+            dictList: [],
+            dictMapped: DICTMAPPED,
+            contentTemplateCompleter: null,
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTypeaheadChangeContentType = this.handleTypeaheadChangeContentType.bind(this);
@@ -28,12 +61,12 @@ export default class ContentTemplateForm extends Component {
     }
 
     componentDidMount = async () => {
-        this.getCollectionType();
+        await this.getCollectionType();
     }
 
     getCollectionType = async () => {
         const { data: { data } } = await getCollectionTypes();
-        if (data.length) {
+        if (data && data.length) {
             const collectionListData = data.filter((el) => {
             if (el.uid.startsWith('api::')) {
                 return el.apiID;
@@ -43,41 +76,22 @@ export default class ContentTemplateForm extends Component {
             collectionListData.length && collectionListData.forEach(element => {
                 contentTypeRefine.push({ label: element.info.pluralName })
             });
-            console.log('contentTypeRefine', contentTypeRefine);
+            const dataTwo = await getFields(contentTypeRefine[0].label.slice(contentTypeRefine[0].label, contentTypeRefine[0].label.length - 1));
+            this.setState({ dictMapped: dataTwo })
             this.setState({ collectionTypes: contentTypeRefine });
         }
-
-
-        // let contentTypes = await getCollectionTypes();
-        // contentTypes = contentTypes.data.data.filter(obj => {
-        //     return obj && (obj.uid && obj.uid.startsWith("api::")) && obj.isDisplayed;
-        // });
-        // const contentTypeRefine = [];
-        // contentTypes.length && contentTypes.forEach(element => {
-        //     contentTypeRefine.push({ label: element.info.pluralName })
-        // });
-        // console.log('contentTypeRefine', contentTypeRefine);
     }
 
     handleSubmit = async (event) => {
-
-        
-
-        console.log("Submitted");
         let obj = 
         {
             "collectionType": this.state.selectedContentType[0].label,
             "templateName": this.state.name,
             "contentShape": this.state.contentTypeProgram,
-            "code": "News7",
+            "code": "News7777",
             "styleSheet": this.state.styleSheet
-          }
-          this.props.addTemplateHandler(obj);
-          console.log(this.state.name);
-          console.log(this.state.styleSheet);
-          console.log(this.state.selectedContentType);
-         // console.log(this.state.collectionTypes);
-        console.log("King",this.state);
+        }
+        this.props.addTemplateHandler(obj);
         event.preventDefault();
         // // API Call
         // const data = {
@@ -99,9 +113,12 @@ export default class ContentTemplateForm extends Component {
         
     }
 
-    handleTypeaheadChangeContentType(event){
-        this.setState({selectedContentType: event});
-        console.log("Collection Type",this.state.selectedContentType);
+    handleTypeaheadChangeContentType = async (selectedContentType) => {
+        if (selectedContentType.length) {
+            const data = await getFields(selectedContentType[0].label.slice(0, selectedContentType[0].label.length - 1));
+            this.setState({ dictMapped: data })
+        }
+        this.setState({ selectedContentType: selectedContentType });
     }
 
     handleContentTypeProgram(value){
@@ -114,6 +131,175 @@ export default class ContentTemplateForm extends Component {
 
     modalHide = () => {
         this.setState({ modalShow: false });
+    }
+
+    onEditorLoaded = (editor) => {
+        this.setState({ editor });
+
+        this.initCompleter();
+
+        editor.commands.addCommand({
+            name: 'dotCommandSubMethods',
+            bindKey: { win: '.', mac: '.' },
+            exec: () => {
+                editor.insert('.');
+                const { selection } = editor;
+                const cursor = selection.getCursor();
+                const extracted = this.extractCodeFromCursor(cursor);
+                const { namespace } = extracted;
+                if (!namespace) {
+                    this.enableRootSuggestions();
+                    return;
+                }
+
+                const [rootSpace, ...subSpace] = namespace.split('.');
+
+                if (subSpace.length > 1) {
+                    this.enableRootSuggestions();
+                    return;
+                }
+
+                const verified = subSpace.length
+                    ? this.findTokenInDictMap(subSpace[0], rootSpace)
+                    : this.findTokenInDictMap(rootSpace);
+                if (verified) {
+                    this.disableRootSuggestions();
+                } else {
+                    this.enableRootSuggestions();
+                }
+                editor.execCommand('startAutocomplete');
+            },
+        });
+    }
+
+    initCompleter() {
+        const contentTemplateCompleter = {
+            getCompletions: (
+                _editor,
+                session,
+                cursor,
+                prefix,
+                callback,
+            ) => {
+                const extracted = this.extractCodeFromCursor(cursor, prefix);
+                const { namespace } = extracted;
+                if (!namespace) {
+                    this.enableRootSuggestions();
+                } else {
+                    const [rootSpace, ...subSpace] = namespace.split('.');
+
+                    const verified = subSpace.length
+                        ? this.findTokenInDictMap(subSpace[0], rootSpace)
+                        : this.findTokenInDictMap(rootSpace);
+                    if (verified) {
+                        this.disableRootSuggestions();
+                        const { dictMapped } = this.state;
+                        if (verified.namespace) {
+                            const mappedToken = dictMapped[verified.namespace];
+                            const dictList = mappedToken[verified.term]
+                                .map(entry => createSuggestionItem(entry, verified.namespace, 2));
+                            this.setState({ dictList });
+                        } else {
+                            const mappedToken = dictMapped[verified.term];
+                            const dictList = Object.entries(mappedToken)
+                                .map(([entry]) => createSuggestionItem(entry, verified.term, 1));
+                            this.setState({ dictList });
+                        }
+                    } else {
+                        this.disableRootSuggestions();
+                    }
+                }
+
+                const dictList = this.state.dictList;
+
+                callback(null, dictList);
+            },
+        };
+
+        langTools.setCompleters([...defaultCompleters, contentTemplateCompleter]);
+        this.setState({ contentTemplateCompleter });
+    }
+
+    extractCodeFromCursor = ({ row, column }, prefixToken) => {
+        const { editor: { session } } = this.state;
+        const codeline = (session.getDocument().getLine(row)).trim();
+        const token = prefixToken || tokenUtils.retrievePrecedingIdentifier(codeline, column);
+        const wholeToken = tokenUtils.retrievePrecedingIdentifier(
+            codeline,
+            column,
+            /[.a-zA-Z_0-9$\-\u00A2-\uFFFF]/,
+        );
+        if (token === wholeToken) {
+            return { token, namespace: '' };
+        }
+        const namespace = wholeToken.replace(/\.$/g, '');
+        return { token, namespace };
+    }
+
+    extractCodeFromCursor = ({ row, column }, prefixToken) => {
+        const { editor: { session } } = this.state;
+        const codeline = (session.getDocument().getLine(row)).trim();
+        const token = prefixToken || tokenUtils.retrievePrecedingIdentifier(codeline, column);
+        const wholeToken = tokenUtils.retrievePrecedingIdentifier(
+            codeline,
+            column,
+            /[.a-zA-Z_0-9$\-\u00A2-\uFFFF]/,
+        );
+        if (token === wholeToken) {
+            return { token, namespace: '' };
+        }
+        const namespace = wholeToken.replace(/\.$/g, '');
+        return { token, namespace };
+    }
+
+    extractCodeFromCursor = ({ row, column }, prefixToken) => {
+        const { editor: { session } } = this.state;
+        const codeline = (session.getDocument().getLine(row)).trim();
+        const token = prefixToken || tokenUtils.retrievePrecedingIdentifier(codeline, column);
+        const wholeToken = tokenUtils.retrievePrecedingIdentifier(
+            codeline,
+            column,
+            /[.a-zA-Z_0-9$\-\u00A2-\uFFFF]/,
+        );
+        if (token === wholeToken) {
+            return { token, namespace: '' };
+        }
+        const namespace = wholeToken.replace(/\.$/g, '');
+        return { token, namespace };
+    }
+
+    enableRootSuggestions = () => {
+        const { dictionary, contentTemplateCompleter } = this.state;
+        langTools.setCompleters([...defaultCompleters, contentTemplateCompleter]);
+        this.setState({
+            dictList: [...dictionary],
+        });
+    }
+
+    findTokenInDictMap = (token, parentToken) => {
+        const { dictMapped } = this.state;
+        const findInDict = (term, dict) => (
+            Object.keys(dict).find((key) => {
+                const keyRegEx = new RegExp(`${escChars(key)}$`, 'g');
+                return keyRegEx.test(term);
+            })
+        );
+        if (!parentToken) {
+            const term = findInDict(token, dictMapped);
+            return term && { term };
+        }
+        const namespace = findInDict(parentToken, dictMapped);
+        if (!namespace) {
+            return false;
+        }
+        const term = findInDict(token, dictMapped[parentToken]);
+        if (!term) return false;
+        return { term, namespace };
+    }
+
+    disableRootSuggestions = () => {
+        const { contentTemplateCompleter } = this.state;
+        langTools.setCompleters([contentTemplateCompleter]);
     }
 
     render() { 
@@ -222,14 +408,22 @@ export default class ContentTemplateForm extends Component {
                         </div>
                         <div className="col-lg-10">
                             <AceEditor
+                                mode="html"
+                                theme="tomorrow"
                                 width="100%"
                                 showPrintMargin={false}
-                                mode="javascript"
-                                theme="github"
-                                onChange={this.handleContentTypeProgram}
-                                //onLoad={this.onEditorLoaded}
+                                editorProps={{
+                                    $blockScrolling: Infinity,
+                                }}
+                                setOptions={{
+                                    useWorker: false,
+                                }}
+                                enableBasicAutocompletion
+                                enableLiveAutocompletion
+                                enableSnippets
                                 name="UNIQUE_ID_OF_DIV"
-                                editorProps={{ $blockScrolling: true }}
+                                onChange={this.handleContentTypeProgram}
+                                onLoad={this.onEditorLoaded}
                                 value={this.state.contentTypeProgram}
                                 style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
                             />
