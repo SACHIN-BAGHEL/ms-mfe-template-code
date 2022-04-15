@@ -49,7 +49,11 @@ class TemplateDataTable extends Component {
         if (prevProps.selectedCollectionType !== this.props.selectedCollectionType ||
             prevState.pageSize !== this.state.pageSize) {
             await this.getTemplates(this.props.selectedCollectionType, true).then(res => {
-                this.setState({currPageWillUpdating: PAGE})
+                if (this.state.templateData.length) {
+                    this.setState({currPageWillUpdating: PAGE})
+                } else {
+                    this.setState({currPageWillUpdating: 0})
+                }
             });
         }
         if (prevState.page !== this.state.page) {
