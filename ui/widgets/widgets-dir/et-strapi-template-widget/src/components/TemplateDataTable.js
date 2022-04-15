@@ -99,7 +99,7 @@ class TemplateDataTable extends Component {
     }
 
     onSubmit = () => {
-        if (this.state.currPageWillUpdating && this.state.currPageWillUpdating <= this.state.pageSize) {
+        if (+this.state.currPageWillUpdating && this.state.currPageWillUpdating <= this.state.pageSize) {
             this.setState({page: +this.state.currPageWillUpdating})
         }
     };
