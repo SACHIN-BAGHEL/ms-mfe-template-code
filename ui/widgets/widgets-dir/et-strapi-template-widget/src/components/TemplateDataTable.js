@@ -18,6 +18,7 @@ class TemplateDataTable extends Component {
             loading: true,
             selectedTempate: null,
             page: PAGE,
+            currPageWillUpdating: 1,
             pageSize: PAGESIZE,
             totalItems: TOTALITEMS,
             lastPage: LASTPAGE,
@@ -31,7 +32,7 @@ class TemplateDataTable extends Component {
         // todo make common method
         const newPaginationState = Object.assign({}, this.state.pagination);
         newPaginationState.page = e.target.value;
-        this.setState({ pageSize: newPaginationState.perPage })
+        this.setState({ currPageWillUpdating: e.target.value })
     }
 
     onPerPageSelect = (eventKey, e) => {
@@ -80,7 +81,7 @@ class TemplateDataTable extends Component {
     }
 
     changePage(page) {
-        this.setState({ page: page })
+        this.setState({ page: page, currPageWillUpdating: page })
     }
 
     setPage = value => {
@@ -98,7 +99,9 @@ class TemplateDataTable extends Component {
     }
 
     onSubmit = () => {
-        this.setPage(this.state.page);
+        if (this.state.currPageWillUpdating && this.state.currPageWillUpdating <= this.state.pageSize) {
+            this.setState({page: +this.state.currPageWillUpdating})
+        }
     };
 
     render() {
@@ -180,7 +183,7 @@ class TemplateDataTable extends Component {
                             viewType="table"
                             pagination={pagination}
                             amountOfPages={this.state.lastPage}
-                            pageInputValue={this.state.page}
+                            pageInputValue={this.state.currPageWillUpdating}
                             onPageSet={this.changePage}
                             onPerPageSelect={this.onPerPageSelect}
                             onFirstPage={() => this.changePage(1)}
