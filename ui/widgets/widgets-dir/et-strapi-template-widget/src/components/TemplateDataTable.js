@@ -46,9 +46,15 @@ class TemplateDataTable extends Component {
     }
 
     componentDidUpdate = async (prevProps, prevState) => {
-        if (prevProps.selectedCollectionType !== this.props.selectedCollectionType || 
+        if (prevProps.selectedCollectionType !== this.props.selectedCollectionType ||
             prevState.pageSize !== this.state.pageSize) {
-            await this.getTemplates(this.props.selectedCollectionType, true);
+            await this.getTemplates(this.props.selectedCollectionType, true).then(res => {
+                if (this.state.templateData.length) {
+                    this.setState({currPageWillUpdating: PAGE})
+                } else {
+                    this.setState({currPageWillUpdating: 0})
+                }
+            });
         }
         if (prevState.page !== this.state.page) {
             await this.getTemplates(this.props.selectedCollectionType);
@@ -104,7 +110,7 @@ class TemplateDataTable extends Component {
 
     onSubmit = () => {
         if (+this.state.currPageWillUpdating && this.state.currPageWillUpdating <= this.state.pageSize) {
-            this.setState({page: +this.state.currPageWillUpdating})
+            this.setState({ page: +this.state.currPageWillUpdating })
         }
     };
 
@@ -119,95 +125,96 @@ class TemplateDataTable extends Component {
         const itemsEnd = Math.min(this.state.page * this.state.pageSize, this.state.totalItems);
 
         return (
-            <div className="show-grid">
-                <Spinner
-                    className=""
-                    inline={false}
-                    inverse={false}
-                    loading={this.state.loading}
-                    size="lg"
-                >
-                    <div className="col-lg-12">
-                        <table className="table dataTable table-striped table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th width="5%">Id</th>
-                                    <th width="5%">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.templateData && this.state.templateData.map((el, idx) => {
-                                    return (
-                                        <tr key={idx}>
-                                            <td>{el.templateName}</td>
-                                            <td>{el.collectionType}</td>
-                                            <td>{el.id}</td>
-                                            <td>
-                                                <DropdownKebab
-                                                    className=""
-                                                    // componentClass={function noRefCheck() { }}
-                                                    id={el.id}
-                                                    pullRight={true}
-                                                    title="Kebab title"
-                                                    toggleStyle="link"
-                                                >
-                                                    <MenuItem
-                                                        bsClass="dropdown"
-                                                        disabled={false}
-                                                        divider={false}
-                                                        header={false}
-                                                        onClick={() => this.setState({ modalShow: true, selectedTempate: el })}>
-                                                        <span>
-                                                            Delete
-                                                        </span>
-                                                    </MenuItem>
-                                                    <MenuItem
-                                                        bsClass="dropdown"
-                                                        disabled={false}
-                                                        divider={false}
-                                                        header={false}
-                                                        onClick={() => this.props.history.push(`/edit-template/${el.code || el.attributes.code}`)}
+            <>
+                <div className="show-grid">
+                    <Spinner
+                        className=""
+                        inline={false}
+                        inverse={false}
+                        loading={this.state.loading}
+                        size="lg"
+                    >
+                        <div className="col-lg-11"></div>
+                        <div className="col-lg-1 mv-2">
+                            <Link to="/add-template">
+                                <button className="btn-primary primary-btn mv-2 btn">
+                                    <span>Add</span>
+                                </button>
+                            </Link>
+                        </div>
+                        <div className="col-lg-12">
+                            <table className="table dataTable table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th width="5%">Id</th>
+                                        <th width="5%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.templateData && this.state.templateData.map((el, idx) => {
+                                        return (
+                                            <tr key={idx}>
+                                                <td>{el.templateName}</td>
+                                                <td>{el.collectionType}</td>
+                                                <td>{el.id}</td>
+                                                <td>
+                                                    <DropdownKebab
+                                                        className=""
+                                                        // componentClass={function noRefCheck() { }}
+                                                        id={el.id}
+                                                        pullRight={true}
+                                                        title="Kebab title"
+                                                        toggleStyle="link"
                                                     >
-                                                        Edit
-                                                    </MenuItem>
-                                                </DropdownKebab>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                        <div className="custom-page"></div>
-                        <PaginationRow
-                            itemCount={this.state.totalItems}
-                            itemsStart={itemsStart}
-                            itemsEnd={itemsEnd}
-                            viewType="table"
-                            pagination={pagination}
-                            amountOfPages={this.state.lastPage}
-                            pageInputValue={this.state.currPageWillUpdating}
-                            onPageSet={this.changePage}
-                            onPerPageSelect={this.onPerPageSelect}
-                            onFirstPage={() => this.changePage(1)}
-                            onPreviousPage={() => this.changePage(this.state.page - 1)}
-                            onPageInput={this.onPageInput}
-                            onNextPage={() => this.changePage(this.state.page + 1)}
-                            onLastPage={() => this.changePage(this.state.lastPage)}
-                            onSubmit={this.onSubmit}
+                                                        <MenuItem
+                                                            bsClass="dropdown"
+                                                            disabled={false}
+                                                            divider={false}
+                                                            header={false}
+                                                            onClick={() => this.setState({ modalShow: true, selectedTempate: el })}>
+                                                            <span>
+                                                                Delete
+                                                            </span>
+                                                        </MenuItem>
+                                                        <MenuItem
+                                                            bsClass="dropdown"
+                                                            disabled={false}
+                                                            divider={false}
+                                                            header={false}
+                                                            onClick={() => this.props.history.push(`/edit-template/${el.code || el.attributes.code}`)}
+                                                        >
+                                                            Edit
+                                                        </MenuItem>
+                                                    </DropdownKebab>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                            <div className="custom-page"></div>
+                            <PaginationRow
+                                itemCount={this.state.totalItems}
+                                itemsStart={itemsStart}
+                                itemsEnd={itemsEnd}
+                                viewType="table"
+                                pagination={pagination}
+                                amountOfPages={this.state.lastPage}
+                                pageInputValue={this.state.currPageWillUpdating}
+                                onPageSet={this.changePage}
+                                onPerPageSelect={this.onPerPageSelect}
+                                onFirstPage={() => this.changePage(1)}
+                                onPreviousPage={() => this.changePage(this.state.page - 1)}
+                                onPageInput={this.onPageInput}
+                                onNextPage={() => this.changePage(this.state.page + 1)}
+                                onLastPage={() => this.changePage(this.state.lastPage)}
+                                onSubmit={this.onSubmit}
                             // messages={messages} i18n
-                        />
-                    </div>
-                </Spinner>
-                <div className="col-lg-10"></div>
-                <div className="col-lg-2">
-                    <Link to="/add-template">
-                        <button className="primary-btn mv-2">
-                            <span>Add content template </span>
-                        </button>
-                    </Link>
-                </div>
+                            />
+                        </div>
+                    </Spinner>
                 {/* <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} /> */}
 
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
@@ -217,6 +224,7 @@ class TemplateDataTable extends Component {
                     </span>
                 </ModalUI>
             </div>
+            </>
         )
     }
 }

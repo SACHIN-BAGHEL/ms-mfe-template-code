@@ -14,10 +14,10 @@ export default class ListContentTemplates extends Component {
 
     render() {
         return (
-            <>
+            <div className={"mv-2"}>
                 <TemplateSearch collectionTypeOnChange={this.collectionTypeOnChange} />
                 <TemplateDataTable selectedCollectionType={this.state.selectedCollectionType}/>
-            </>
+            </div>
         )
     }
 }
