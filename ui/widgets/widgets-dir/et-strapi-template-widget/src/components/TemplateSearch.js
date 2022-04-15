@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { getSanitizedCollectionTypes } from '../helpers/helpers';
 import { getCollectionTypes } from '../integration/Template'
 
 export default class TemplateSearch extends Component {
@@ -15,11 +16,14 @@ export default class TemplateSearch extends Component {
     }
 
     getCollectionType = async () => {
-        const { data: { data } } = await getCollectionTypes();
-        if (data.length) {
-            const collectionListData = data.filter((el) => el.uid.startsWith('api::'));
-            this.setState({ collectionType: collectionListData });
-        }
+        //Remove later
+        // const { data: { data } } = await getCollectionTypes();
+        // if (data.length) {
+        //     const collectionListData = data.filter((el) => el.uid.startsWith('api::') &&  el.isDisplayed);
+        //     this.setState({ collectionType: collectionListData });
+        // }
+        const sanitizedCollectionTypes = await getSanitizedCollectionTypes();
+        this.setState({ collectionType: sanitizedCollectionTypes });
     }
 
     collectionTypeOnChange = (event) => this.setState({ selectedCollectionType: event.target.value });
@@ -42,7 +46,8 @@ export default class TemplateSearch extends Component {
                             </div>
                             <select onChange={this.collectionTypeOnChange} className="col-lg-7" name="cars" id="cars" style={{ height: "100%", marginLeft: '2rem' }}>
                                 <option value="all">All</option>
-                                {this.state.collectionType.map(el => <option key={el.apiID} value={el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}>{el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}</option>)}
+                                {/* {this.state.collectionType.map(el => <option key={el.apiID} value={el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}>{el.apiID.charAt(0).toUpperCase() + el.apiID.slice(1)}</option>)} */}
+                                {this.state.collectionType.map(el => <option key={el.displayName} value={el.displayName}>{el.displayName}</option>)}
                             </select>
                         </div>
                         <div className="show-grid row" style={{ marginTop: "1rem" }}>

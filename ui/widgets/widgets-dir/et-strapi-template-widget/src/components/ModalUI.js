@@ -16,6 +16,7 @@ export default class ModalUI extends Component {
                     >
                         <Icon type="pf" name="close" />
                     </button>
+
                     <Modal.Title>{this.props.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -35,7 +36,7 @@ export default class ModalUI extends Component {
                     >
                         Close
                     </Button>
-                    {this.props.delete && <Button
+                    {this.props.type === 'delete' && <Button
                         bsStyle="danger"
                         className="btn-delete"
                         onClick={this.props.handleDelete}

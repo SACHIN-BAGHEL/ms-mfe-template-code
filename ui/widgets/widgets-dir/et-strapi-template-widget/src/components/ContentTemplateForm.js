@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 import { addNewTemplate, getCollectionTypes } from '../integration/Template';
 import { getFields, getFieldsTwo } from '../integration/StrapiAPI';
 import { DICTIONARY, DICTMAPPED } from '../constant/constant';
+import { useHistory } from "react-router-dom";
+import { getFilteredCollectionTypes } from '../helpers/helpers';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -19,6 +21,8 @@ const defaultCompleters = [textCompleter, keyWordCompleter, snippetCompleter];
 
 const escChars = term => term.replace('$', '\\$').replace('#', '\\#');
 const isAttribFunction = term => /[a-zA-Z]+\([^)]*\)(\.[^)]*\))?/g.test(term);
+
+
 
 const createSuggestionItem = (key, namespace, lvl = 0, meta = '') => ({
   caption: key,
@@ -66,25 +70,53 @@ export default class ContentTemplateForm extends Component {
     }
 
     getCollectionType = async () => {
-        const { data: { data } } = await getCollectionTypes();
-        if (data && data.length) {
-            this.getDataTypeOfAttribute(data);
-            const collectionListData = data.filter((el) => {
-            if (el.uid.startsWith('api::')) {
-                return el.apiID;
-            }
-            });
+        // Remove commented code later
+        // const { data: { data } } = await getCollectionTypes();
+        // if (data && data.length) {
+        //     this.getDataTypeOfAttribute(data);
+        //     const collectionListData = data.filter((el) => {
+        //     if (el.uid.startsWith('api::')) {
+        //         return el.apiID;
+        //     }
+        //     });
+        //     const contentTypeRefine = [];
+        //     collectionListData.length && collectionListData.forEach(element => {
+        //         contentTypeRefine.push({ label: element.info.pluralName })
+        //     });
+        //     console.log('contentTypeRefine: ',contentTypeRefine );
+        //     const fieldsData = await getFields(contentTypeRefine[0].label.slice(contentTypeRefine[0].label, contentTypeRefine[0].label.length - 1));
+        //     this.setState({ dictMapped: fieldsData })
+        //     this.setState({ collectionTypes: contentTypeRefine });
+        //     console.log('state attributesList: ', this.state.attributesList);
+        // }
+
+        const collectionListData = await getFilteredCollectionTypes();
+        if (collectionListData && collectionListData.length) {
+            this.getDataTypeOfAttribute(collectionListData);
+            console.log('collectionListData: ', collectionListData);
             const contentTypeRefine = [];
-            collectionListData.length && collectionListData.forEach(element => {
-                contentTypeRefine.push({ label: element.info.pluralName })
+            collectionListData.forEach(element => {
+                contentTypeRefine.push({ label: element.info.displayName })
             });
-            const fieldsData = await getFields(contentTypeRefine[0].label.slice(contentTypeRefine[0].label, contentTypeRefine[0].label.length - 1));
-            this.setState({ dictMapped: fieldsData })
+            console.log('contentTypeRefine: ', contentTypeRefine);
+            const fieldsData = await this.getFieldData(contentTypeRefine[0].label);
+            console.log('fieldsData: ', fieldsData);
+            this.setState({ dictMapped: fieldsData });
             this.setState({ collectionTypes: contentTypeRefine });
+            console.log('state attributesList: ', this.state.attributesList);
         }
     }
 
+    /**
+     * Get field data through api
+     */
+    getFieldData = async (collectionType) => {
+        return await getFields(collectionType);
+    }
+
     handleSubmit = async (event) => {
+        alert('11111111111');
+        // let history = useHistory();
         let obj = 
         {
             "collectionType": this.state.selectedContentType[0].label,
@@ -93,8 +125,10 @@ export default class ContentTemplateForm extends Component {
             "code": "News7777",
             "styleSheet": this.state.styleSheet
         }
+        // alert('2222222222');
         this.props.addTemplateHandler(obj);
         event.preventDefault();
+        // alert('333333333');
         // // API Call
         // const data = {
         //     code: this.state.code,
@@ -105,20 +139,34 @@ export default class ContentTemplateForm extends Component {
         // await postTemplate(data).then((res) => {
         //     this.props.history.push('/')
         // });
+        alert('444444444');
+        console.log('oooooobject: ', obj);
         await addNewTemplate(obj).then((res) => {
-                console.log(res);
-            });
+            console.log('ressssssssssss ', res);
+            alert('Template created successfully');
+            // this.props.history.push('/')
+        });
     }
 
     getDataTypeOfAttribute(data) {
-        data.map(el => {
-            if (el.uid.startsWith('api::')) {
+        // data.map(el => {
+        //     if (el.uid.startsWith('api::')) {
+        //         let refine = [];
+        //         for (let attr in el.attributes) {
+        //             refine.push({ [attr]: el.attributes[attr]['type'] });
+        //         }
+        //         this.setState({attributesList: refine})
+        //     }
+        // });
+
+         data.map(el => {
+            // if (el.uid.startsWith('api::')) {
                 let refine = [];
                 for (let attr in el.attributes) {
                     refine.push({ [attr]: el.attributes[attr]['type'] });
                 }
                 this.setState({attributesList: refine})
-            }
+            // }
         });
     }
 
@@ -128,10 +176,13 @@ export default class ContentTemplateForm extends Component {
     }
 
     handleTypeaheadChangeContentType = async (selectedContentType) => {
+        console.log('selected: ', selectedContentType[0].label);
         if (selectedContentType.length) {
-            const data = await getFields(selectedContentType[0].label.slice(0, selectedContentType[0].label.length - 1));
-            this.setState({ dictMapped: data })
+            // const data = await getFields(selectedContentType[0].label.slice(0, selectedContentType[0].label.length - 1));
+            const data = await getFields(selectedContentType[0].label);
+            this.setState({ dictMapped: data });
         }
+        // this.getDataTypeOfAttribute(this.state.contentTypes);---------------
         this.setState({ selectedContentType: selectedContentType });
     }
 
@@ -316,7 +367,8 @@ export default class ContentTemplateForm extends Component {
         langTools.setCompleters([contentTemplateCompleter]);
     }
 
-    render() { 
+    render() {
+        console.log('this. state', this.state);
         return (
             <div className="formContainer show-grid" style={{marginRight:"12vw"}}>
                 <form onSubmit={this.handleSubmit}>
@@ -390,7 +442,11 @@ export default class ContentTemplateForm extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.state.attributesList.map(el => (<tr><td>{Object.keys(el)[0]}</td><td>{el[Object.keys(el)[0]]}</td></tr>))}
+                                    {this.state.attributesList.map(el => (
+                                    <tr>
+                                        <td>{Object.keys(el)[0]}</td>
+                                        <td>{el[Object.keys(el)[0]]}</td>
+                                    </tr>))}
                                 </tbody>
                             </table>
                         </div>

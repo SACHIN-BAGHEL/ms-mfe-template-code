@@ -1,8 +1,9 @@
 // TODO remove later highpriv
 import axios from "axios";
-import { getData, postData } from "./Http";
+import { deleteData, getData, postData } from "./Http";
 
 // endpoints
+const templateBaseUrl = `${process.env.REACT_APP_PUBLIC_API_URL}/template/`
 const urlTemplates = `${process.env.REACT_APP_PUBLIC_API_URL}/template/paged`
 const urlStrapi = `${process.env.STRAPI_APP_PUBLIC_API_URL}/`
 const urlAddTemplate = `${process.env.REACT_APP_PUBLIC_API_URL}/template/`
@@ -24,9 +25,8 @@ export const getAllTemplates = async (page, pageSize, selectedCollectionType) =>
 }
 
 export const addNewTemplate = async (templateData) => {
-    let url = "http://localhost:8081/api/template/";
-    console.log("urlAddTemplate",urlAddTemplate);
-    const { data, isError } = await postData(urlAddTemplate,templateData);
+    // let url = "http://localhost:8081/api/template/";
+    const { data, isError } = await postData(urlAddTemplate, templateData);
     // eventHandler(
     //   isError,
     //   `${i18n.t('toasterMessage.impossibleToCreateBundle')} ${data ? data.message : ""}`,
@@ -39,7 +39,7 @@ export const addNewTemplate = async (templateData) => {
  * COLLECTION TYPE ***
  *********************/
 // todo make this method more generic or use the generic method like template declare url in env || const file.
-const strapiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ5ODUxMjI2LCJleHAiOjE2NTI0NDMyMjZ9.ia9ND5V0CZ_k4osmG8-K6IJiFXlzHxR3qmKh8XDGal4';
+const strapiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ5OTMzODA5LCJleHAiOjE2NTI1MjU4MDl9.1nRNKrcorlfu5z4Pz4H-0zVkwFKBJiZTGW2sgfHA5KU';
 
 // export const getCollectionTypes = async () => {
 //     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
@@ -64,3 +64,21 @@ export const getCollectionTypes = async () => {
 //     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, addAuthorizationRequestConfig({}, 'EntKcToken'));
 //     return data;
 // }
+
+
+/**
+ * Delete a template
+ * @param {} page 
+ * @param {*} pageSize 
+ * @param {*} selectedCollectionType 
+ * @returns 
+ */
+export const deleteTemplate = async (templateId) => {
+    const { data, isError } = await deleteData(templateBaseUrl, templateId)
+    // eventHandler(
+    //     isError,
+    //     `${i18n.t('toasterMessage.impossibleToLoadCategory')} ${data ? data.message : ""}`
+    // )
+    console.log('10101010 ', data);
+    return checkForErrorsAndSendResponse(data, isError, "response")
+}

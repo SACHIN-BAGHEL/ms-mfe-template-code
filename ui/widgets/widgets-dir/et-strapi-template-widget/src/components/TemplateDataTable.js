@@ -4,7 +4,7 @@ import { DropdownKebab, MenuItem, Spinner } from 'patternfly-react';
 import ModalUI from './ModalUI';
 import { withRouter } from "react-router-dom";
 import PaginationRow from 'patternfly-react/dist/js/components/Pagination/PaginationRow';
-import { getAllTemplates } from '../integration/Template';
+import { getAllTemplates, deleteTemplate } from '../integration/Template';
 import { LASTPAGE, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS } from '../constant/constant';
 
 const perPageOptions = PERPAGEOPTIONS;
@@ -57,10 +57,14 @@ class TemplateDataTable extends Component {
 
     modalHide = () => this.setState({ modalShow: false });
 
-    handleDelete = async () => {
-        await deleteTemplate(this.state.selectedTempate.code).then((res) => {
+    /**
+     * Method to delete a template
+     */
+     handleDelete = async () => {
+        await deleteTemplate(this.state.selectedTempate.id).then((res) => {
             this.componentDidMount();
             this.modalHide();
+            alert(res.response);
         });
     }
 
@@ -204,7 +208,14 @@ class TemplateDataTable extends Component {
                         </button>
                     </Link>
                 </div>
-                <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} />
+                {/* <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} /> */}
+
+                <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
+                    <span align="center">
+                        <h2><b> Delete Template </b></h2>
+                        <h4> Do you really want to delete ?</h4>
+                    </span>
+                </ModalUI>
             </div>
         )
     }
