@@ -95,7 +95,11 @@ class ContentTemplateForm extends Component {
 
         await addNewTemplate(templateObject).then((res) => {
             if (res.isError) {
-                alert(res.errorBody.response.data.errors.join(','));
+                if(res.errorBody && res.errorBody.response && res.errorBody.response.data && res.errorBody.response.data.errors && res.errorBody.response.data.errors.length) {
+                    alert(res.errorBody.response.data.errors.join("\r\n"));
+                } else {
+                    alert('Something went wrong, please try again.');
+                }
             } else {
                 alert('Template created successfully');
                 this.props.history.push('/')

@@ -15,7 +15,7 @@ public class TemplateRequestView {
 	private String collectionType;
 
 	@NotEmpty(message = "templateName is mandatory field")
-	@Size(min = 1, max = ApplicationConstants.TEMPLATE_NAME_MAX_LENGTH, message = "max char length for templateName: "+ ApplicationConstants.TEMPLATE_NAME_MAX_LENGTH)
+	@Size(min = 1, max = ApplicationConstants.TEMPLATE_NAME_MAX_LENGTH, message = "Max char length for templateName: "+ ApplicationConstants.TEMPLATE_NAME_MAX_LENGTH)
 	private String templateName;
 
 	private String contentShape;
