@@ -1,4 +1,5 @@
-import { getCollectionTypes } from '../integration/Template'
+import { getStrapiContentTypes } from '../integration/StrapiAPI';
+
 // import {ADMIN, AUTHOR, GIT_DOMAIN, MANAGER, MATCHER, USER_ROLES} from './constants'
 
 export const getKeycloakToken = () => {
@@ -101,9 +102,9 @@ export const isCurrentUserAssignedAPreferredName = () => {
  * Get all collection types and filter them based on api::
  * @returns 
  */
-export const getFilteredCollectionTypes = async () => {
+export const getFilteredContentTypes = async () => {
     let filteredCollectionTypes;
-    const { data: { data } } = await getCollectionTypes();
+    const { data: { data } } = await getStrapiContentTypes();
     if (data.length) {
         filteredCollectionTypes = data.filter((el) => el.uid.startsWith('api::') && el.isDisplayed);
     }
@@ -116,11 +117,10 @@ export const getFilteredCollectionTypes = async () => {
  */
 export const getSanitizedCollectionTypes = async () => {
     let sanitizedCollectionTypes = [];
-    const data = await getFilteredCollectionTypes();
+    const data = await getFilteredContentTypes();
     if (data.length) {
         data.forEach(element => {
             if(element) {
-                // obj.upperCasedDisplayName = element.info.displayName.charAt(0).toUpperCase() + element.info.displayName.slice(1);
                 sanitizedCollectionTypes.push(element.info);
             }
         });

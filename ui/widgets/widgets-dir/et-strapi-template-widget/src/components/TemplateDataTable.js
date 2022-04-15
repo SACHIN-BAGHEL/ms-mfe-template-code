@@ -219,7 +219,7 @@ class TemplateDataTable extends Component {
 
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
                     <span align="center">
-                        <h2><b> Delete Template </b></h2>
+                        <h2><b> Delete {this.state.selectedTempate && this.state.selectedTempate.templateName && this.state.selectedTempate.templateName} </b></h2>
                         <h4> Do you really want to delete ?</h4>
                     </span>
                 </ModalUI>

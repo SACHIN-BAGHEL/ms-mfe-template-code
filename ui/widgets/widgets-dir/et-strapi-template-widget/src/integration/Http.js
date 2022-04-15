@@ -21,7 +21,6 @@ export const postData = async (url, payload) => {
     url = mergeUrl(url)
     const data = await axios
       .post(url, payload, addAuthorizationRequestConfig())
-    //   .post(url, payload)
       .then((res) => {
         return res
       })
