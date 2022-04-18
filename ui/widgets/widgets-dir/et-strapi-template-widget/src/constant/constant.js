@@ -15,10 +15,15 @@ export const PAGECHANGEVALUE= 1;
  *********************/
 
 export const NO_TEMPLATE_FOUND = "No template found.";
-export const DEL_TEMPLATE_CONFIRM_MSG = "Do you really want to delete ?";
+export const DEL_TEMPLATE_CONFIRM_MSG = 'Do you really want to delete ?';
+export const TEMPLATE_CREATED_SUCCESSFULLY_MSG = 'Template created successfully';
+export const SOMETHING_WENT_WRONG_MSG = 'Something went wrong, please try again.'
 
-export const DELETE_LABEL = "Delete";
-export const CLOSE_LABEL = "Close";
+export const DELETE_LABEL = 'Delete';
+export const EDIT_LABEL = 'Edit';
+export const CLOSE_LABEL = 'Close';
+export const CANCEL_LABEL = 'Cancel';
+export const SAVE_LABEL = 'Save';
 
 /*********************
  * Editor Vars *******
@@ -146,10 +151,20 @@ export const DICTMAPPED = {
     "#foreach ($item in $<LIST>) $item #end": {}
 }
 
+export const NOTIFICATION_TYPE =  {
+    SUCCESS: 'success',
+    ERROR: 'error',
+    WARN: 'warn',
+    INFO: 'info'
+}
+
+export const NOTIFICATION_TIMER_SUCCESS =  3000 //millisecond
+export const NOTIFICATION_TIMER_ERROR =  8000 //millisecond
+
 export const NOTIFICATION_OBJECT =  {
     key: 1,
     type: '',
     persistent: false,
-    timerdelay: 3000,
+    timerdelay: NOTIFICATION_TIMER_SUCCESS,
     message: ''
 }

@@ -10,7 +10,7 @@ import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
 import { addNewTemplate } from '../integration/Template';
 import { getFields } from '../integration/StrapiAPI';
-import { DICTIONARY, DICTMAPPED } from '../constant/constant';
+import { CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR, NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG, TEMPLATE_CREATED_SUCCESSFULLY_MSG } from '../constant/constant';
 import { getFilteredContentTypes } from '../helpers/helpers';
 import { withRouter } from "react-router-dom";
 
@@ -55,7 +55,7 @@ class ContentTemplateForm extends Component {
             dictList: [],
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
-            attributesList: [],
+            attributesList: []
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTypeHeadChange = this.handleTypeHeadChange.bind(this);
@@ -83,7 +83,8 @@ class ContentTemplateForm extends Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        let templateObject = 
+        let notificationObj = NOTIFICATION_OBJECT;
+        let templateObject =
         {
             "collectionType": this.state.selectedContentType.length ? this.state.selectedContentType[0].label : '',
             "templateName": this.state.name ? this.state.name : '',
@@ -95,15 +96,20 @@ class ContentTemplateForm extends Component {
 
         await addNewTemplate(templateObject).then((res) => {
             if (res.isError) {
-                if(res.errorBody && res.errorBody.response && res.errorBody.response.data && res.errorBody.response.data.errors && res.errorBody.response.data.errors.length) {
-                    alert(res.errorBody.response.data.errors.join("\r\n"));
+                notificationObj.type = NOTIFICATION_TYPE.ERROR;
+                if (res.errorBody && res.errorBody.response && res.errorBody.response.data && res.errorBody.response.data.errors && res.errorBody.response.data.errors.length) {
+                    notificationObj.message = res.errorBody.response.data.errors.join(", ");
                 } else {
-                    alert('Something went wrong, please try again.');
+                    notificationObj.message = SOMETHING_WENT_WRONG_MSG;
                 }
+                notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
             } else {
-                alert('Template created successfully');
-                this.props.history.push('/')
+                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
+                notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
+                notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
+                // this.props.history.push('/');// TODO: use this, kamlesh
             }
+            this.props.showNotification(notificationObj);
         });
     }
 
@@ -326,9 +332,9 @@ class ContentTemplateForm extends Component {
                             </div>
                             <div className="col-lg-2">
                                 <Link to="/">
-                                    <button className="default-btn">Cancel</button>
+                                    <button className="default-btn">{CANCEL_LABEL}</button>
                                 </Link>
-                                <button class="btn-primary" type="submit" style={{ marginLeft:"1vw"}}>Save</button>
+                                <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
                             </div>
                         </div>
                     <div className="formContainer col-xs-12 form-group">

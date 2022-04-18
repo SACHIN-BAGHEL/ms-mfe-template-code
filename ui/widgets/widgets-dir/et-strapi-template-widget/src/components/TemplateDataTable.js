@@ -5,7 +5,7 @@ import ModalUI from './ModalUI';
 import { withRouter } from "react-router-dom";
 import PaginationRow from 'patternfly-react/dist/js/components/Pagination/PaginationRow';
 import { getAllTemplates, deleteTemplate } from '../integration/Template';
-import { LASTPAGE, NOTIFICATION_OBJECT, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS, DEL_TEMPLATE_CONFIRM_MSG } from '../constant/constant';
+import { LASTPAGE, NOTIFICATION_OBJECT, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS, DEL_TEMPLATE_CONFIRM_MSG, DELETE_LABEL, EDIT_LABEL, NOTIFICATION_TYPE } from '../constant/constant';
 
 const perPageOptions = PERPAGEOPTIONS;
 
@@ -74,10 +74,10 @@ class TemplateDataTable extends Component {
             this.componentDidMount();
             this.modalHide();
             if(res.isError) {
-                notificationObj.type = 'error';
+                notificationObj.type = NOTIFICATION_TYPE.ERROR;
                 notificationObj.message = res.errorBody.response.data.message;
             } else {
-                notificationObj.type = 'success';
+                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
                 notificationObj.message = res.message;
             }
             this.props.showNotification(notificationObj);
@@ -185,7 +185,7 @@ class TemplateDataTable extends Component {
                                                             header={false}
                                                             onClick={() => this.setState({ modalShow: true, selectedTempate: el })}>
                                                             <span>
-                                                                Delete
+                                                                {DELETE_LABEL}
                                                             </span>
                                                         </MenuItem>
                                                         <MenuItem
@@ -195,7 +195,7 @@ class TemplateDataTable extends Component {
                                                             header={false}
                                                             onClick={() => this.props.history.push(`/edit-template/${el.code || el.attributes.code}`)}
                                                         >
-                                                            Edit
+                                                            {EDIT_LABEL}
                                                         </MenuItem>
                                                     </DropdownKebab>
                                                 </td>

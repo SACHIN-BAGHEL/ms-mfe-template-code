@@ -8,7 +8,7 @@ export default class ListContentTemplates extends Component {
         super(props);
         this.state = {
             selectedCollectionType: "All",
-            notifications: [],
+            notifications: []
         };
 
         this.removeNotificationAction = notificationToRemove => {
@@ -17,7 +17,7 @@ export default class ListContentTemplates extends Component {
             });
         };
 
-        this.showNotification = this.showNotification.bind(this)
+        this.showNotification = this.showNotification.bind(this);
     }
 
     showNotification = (notificationToAdd) => {
@@ -37,11 +37,11 @@ export default class ListContentTemplates extends Component {
             <div align="right" margin="50px" style={{ zIndex: 1 }}>
                 {this.state.notifications.map(notification => (
                 <TimedToastNotification
-                key={notification.key}
-                type={notification.type}
-                persistent={false}
-                onDismiss={() => this.removeNotificationAction(notification)}
-                timerdelay={notification.timerdelay}
+                    key={notification.key}
+                    type={notification.type}
+                    persistent={false}
+                    onDismiss={() => this.removeNotificationAction(notification)}
+                    timerdelay={notification.timerdelay}
                 >
                 <span>
                     {notification.header && <strong>{notification.header}<br></br></strong>}
@@ -52,8 +52,8 @@ export default class ListContentTemplates extends Component {
             {/* ------------------------------------ */}
             </div>
 
-            <TemplateSearch collectionTypeOnChange={this.collectionTypeOnChange}  />
-            <TemplateDataTable selectedCollectionType={this.state.selectedCollectionType} showNotification={this.showNotification}/>
+                <TemplateSearch collectionTypeOnChange={this.collectionTypeOnChange} />
+                <TemplateDataTable selectedCollectionType={this.state.selectedCollectionType} showNotification={this.showNotification} />
         </div>
         )
     }
