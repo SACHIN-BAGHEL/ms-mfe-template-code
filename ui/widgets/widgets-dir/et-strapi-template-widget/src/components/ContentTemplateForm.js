@@ -318,8 +318,19 @@ class ContentTemplateForm extends Component {
 
     render() {
         return (
-            <div className="formContainer show-grid" style={{marginRight:"12vw"}}>
+            <div className="formContainer show-grid" style={{marginRight:"12vw", marginTop:"2vw"}}>
                 <form onSubmit={this.handleSubmit}>
+                    {/* kamlesh */}
+                <div className="formContainer col-xs-12" align="right" style={{ marginBottom:"2vw"}}>
+                            <div className="col-lg-10" style={{ textAlign: "end" }}>
+                            </div>
+                            <div className="col-lg-2">
+                                <Link to="/">
+                                    <button className="default-btn">Cancel</button>
+                                </Link>
+                                <button class="btn-primary" type="submit" style={{ marginLeft:"1vw"}}>Save</button>
+                            </div>
+                        </div>
                     <div className="formContainer col-xs-12 form-group">
                         <div className="col-lg-2" style={{ textAlign: "end" }}>
                             <label htmlFor="id" className="control-label">
@@ -462,16 +473,7 @@ class ContentTemplateForm extends Component {
                             />
                         </div>
                     </div>
-                    <div className="formContainer col-xs-12">
-                            <div className="col-lg-10" style={{ textAlign: "end" }}>
-                            </div>
-                            <div className="col-lg-2">
-                                <Link to="/">
-                                    <button className="default-btn">Cancel</button>
-                                </Link>
-                                <button className="default-btn" type="submit">Save</button>
-                            </div>
-                        </div>
+
                 </form>
                 
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"}>
