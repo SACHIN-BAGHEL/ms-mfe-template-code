@@ -42,5 +42,5 @@ export const addNewTemplate = async (templateData) => {
  */
 export const deleteTemplate = async (templateId) => {
     const { data, isError } = await deleteData(templateBaseUrl, templateId)
-    return checkForErrorsAndSendResponse(data, isError, "response")
+    return checkForErrorsAndSendResponse(data, isError, "message")
 }

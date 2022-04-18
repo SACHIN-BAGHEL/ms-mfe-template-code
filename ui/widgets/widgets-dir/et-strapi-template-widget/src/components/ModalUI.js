@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'patternfly-react/dist/js/components/Button'
 import { Icon } from 'patternfly-react/dist/js/components/Icon'
 import { Modal } from 'patternfly-react/dist/js/components/Modal'
+import { CLOSE_LABEL, DELETE_LABEL } from '../constant/constant'
 
 export default class ModalUI extends Component {
     render() {
@@ -34,14 +35,14 @@ export default class ModalUI extends Component {
                         className="btn-cancel"
                         onClick={this.props.modalHide}
                     >
-                        Close
+                        {CLOSE_LABEL}
                     </Button>
                     {this.props.type === 'delete' && <Button
                         bsStyle="danger"
                         className="btn-delete"
                         onClick={this.props.handleDelete}
                     >
-                        delete
+                        {DELETE_LABEL}
                     </Button>}
                 </Modal.Footer>
             </Modal>

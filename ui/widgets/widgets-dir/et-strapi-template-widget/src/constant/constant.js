@@ -15,6 +15,10 @@ export const PAGECHANGEVALUE= 1;
  *********************/
 
 export const NO_TEMPLATE_FOUND = "No template found.";
+export const DEL_TEMPLATE_CONFIRM_MSG = "Do you really want to delete ?";
+
+export const DELETE_LABEL = "Delete";
+export const CLOSE_LABEL = "Close";
 
 /*********************
  * Editor Vars *******
@@ -140,4 +144,12 @@ export const DICTMAPPED = {
     "#if (<TRUE>) <DO> #end": {},
     "#set ($<VAR> = <VALUE>)": {},
     "#foreach ($item in $<LIST>) $item #end": {}
+}
+
+export const NOTIFICATION_OBJECT =  {
+    key: 1,
+    type: '',
+    persistent: false,
+    timerdelay: 3000,
+    message: ''
 }
