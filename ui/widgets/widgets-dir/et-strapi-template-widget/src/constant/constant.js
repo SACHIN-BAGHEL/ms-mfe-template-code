@@ -42,6 +42,7 @@ export const ELE_TYPE = {
     TYPE: "type"
 }
 
+export const TOASTER_POSITION = { zIndex: 1, position: "fixed", top: "1rem",right: "0" }
 
 /*********************
  * Editor Vars *******

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import TemplateDataTable from '../components/TemplateDataTable'
 import TemplateSearch from '../components/TemplateSearch'
 import { TimedToastNotification} from 'patternfly-react';
+import { TOASTER_POSITION } from '../constant/constant';
 
 export default class ListContentTemplates extends Component {
     constructor(props) {
@@ -34,12 +35,12 @@ export default class ListContentTemplates extends Component {
             <div className={"mv-2"}>
 
             {/* ------ Show Notifications ------- */}
-            <div align="right" margin="50px" style={{ zIndex: 1 }}>
+            <div style={TOASTER_POSITION}>
                 {this.state.notifications.map(notification => (
                 <TimedToastNotification
                     key={notification.key}
                     type={notification.type}
-                    persistent={false}
+                    persistent={true}
                     onDismiss={() => this.removeNotificationAction(notification)}
                     timerdelay={notification.timerdelay}
                 >
