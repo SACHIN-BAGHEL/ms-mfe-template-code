@@ -40,6 +40,10 @@
     box-shadow: 0 2px 3px rgb(3 3 3 / 10%);
 }
 
+.validation-block {
+    color: red;
+}
+
 /* margin mt = margin-top, mv = margin-vertical */
 .mt-1 {
     margin-top: 1rem;

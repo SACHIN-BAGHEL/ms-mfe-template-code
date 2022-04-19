@@ -26,6 +26,15 @@ export const CANCEL_LABEL = 'Cancel';
 export const SAVE_LABEL = 'Save';
 
 /*********************
+ * Error Messages ****
+ *********************/
+export const MIN3CHAR = "Min 3 Char";
+export const MAX25CHAR = "Max 3 Char";
+export const NAMEREQ = "Name Required";
+export const EDITORCODINGREQ = "Editor Coding Required";
+export const TYPEREQ = "Type Required"
+
+/*********************
  * Editor Vars *******
  *********************/
 

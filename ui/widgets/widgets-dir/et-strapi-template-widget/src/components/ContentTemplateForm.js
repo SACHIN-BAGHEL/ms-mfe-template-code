@@ -10,9 +10,15 @@ import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
 import { addNewTemplate } from '../integration/Template';
 import { getFields } from '../integration/StrapiAPI';
-import { CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR, NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG, TEMPLATE_CREATED_SUCCESSFULLY_MSG } from '../constant/constant';
+import {
+    CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
+    NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
+    TEMPLATE_CREATED_SUCCESSFULLY_MSG, MAX25CHAR, MIN3CHAR
+} from '../constant/constant';
 import { getFilteredContentTypes } from '../helpers/helpers';
 import { withRouter } from "react-router-dom";
+import { templateSchema } from '../helpers/TemplateSchema';
+import { fillErrors } from '../helpers/fillErrors';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -55,7 +61,22 @@ class ContentTemplateForm extends Component {
             dictList: [],
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
-            attributesList: []
+            attributesList: [],
+            errorObj: {
+                name: {
+                    message: '',
+                },
+                type: {
+                    message: '',
+                },
+                editorCoding: {
+                    message: '',
+                },
+                styleSheet: {
+                    message: '',
+                }
+            },
+            isFormValid: false
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTypeHeadChange = this.handleTypeHeadChange.bind(this);
@@ -65,6 +86,39 @@ class ContentTemplateForm extends Component {
 
     componentDidMount = async () => {
         await this.getCollectionType();
+    }
+
+    componentDidUpdate = async (prevProps, prevState) => {
+        console.log(this.state, prevState);
+        const prevErr = prevState.errorObj;
+        const currErr = this.state.errorObj;
+        if (this.state.errorObj.name.message !== prevState.errorObj.name.message
+            || this.state.errorObj.type.message !== prevState.errorObj.type.message
+            || this.state.errorObj.editorCoding.message !== prevState.errorObj.editorCoding.message
+            || this.state.errorObj.styleSheet.message !== prevState.errorObj.styleSheet.message
+        ) {
+            // if (this.state !== prevState
+                
+            // ) {
+        //         if (currErr.name.message !== prevErr.name.message
+        //     || currErr.type.message !== prevErr.type.message
+        //     || currErr.editorCoding.message !== prevErr.editorCoding.message
+        //     || currErr.styleSheet.message !== prevErr.styleSheet.message
+        // ) {
+            // TODOD
+            if (!this.state.errorObj['name']['message']) {
+                this.setState({ isFormValid: true });
+            }
+            // TODOD
+            // this.setState({ isFormValid: true });
+            // console.log('picking');
+            // for (const key in this.state.errorObj) {
+            //     if (!this.state.errorObj[key]['message']) {
+            //         this.setState({ isFormValid: true });
+            //     }
+            // }
+            // console.log("Jackie",this.state.isFormValid);
+        }
     }
 
     /**
@@ -84,6 +138,9 @@ class ContentTemplateForm extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         let notificationObj = NOTIFICATION_OBJECT;
+        console.log("STATE DATA", this.state);
+        // TODO: END: VALIDATION BEFORE SUBMISSION.
+
         let templateObject =
         {
             "collectionType": this.state.selectedContentType.length ? this.state.selectedContentType[0].label : '',
@@ -92,6 +149,47 @@ class ContentTemplateForm extends Component {
             "code": "News7777",
             "styleSheet": this.state.styleSheet
         }
+        let validationError;
+        const errorStateUpdate = {
+            name: {
+                message: '',
+            },
+            type: {
+                message: '',
+            },
+            editorCoding: {
+                message: '',
+            },
+            styleSheet: {
+                message: '',
+            }
+        };
+        await templateSchema.validate(templateObject, { abortEarly: false })
+            .then((valid) => {
+                console.log("VALIDATION PASSED", valid);
+            })
+            .catch((err) => {
+                validationError = fillErrors(err);
+                if (validationError.templateName) {
+                    errorStateUpdate.name.message = validationError.templateName.join(',')
+                }
+                if (validationError.contentShape) {
+                    errorStateUpdate.editorCoding.message = validationError.contentShape.join(',')
+                }
+                if (validationError.collectionType) {
+                    errorStateUpdate.type.message = validationError.collectionType.join(',')
+                }
+                if (validationError.styleSheet) {
+                    errorStateUpdate.styleSheet.message = validationError.styleSheet.join(',')
+                }
+                this.setState({ errorObj: errorStateUpdate });
+            });
+            if (validationError)
+            // can't proceed due to invalid form
+            return;
+        // TODO: END: VALIDATION BEFORE SUBMISSION.
+
+
         // this.props.addTemplateHandler(obj); TODO: for resuble case.
 
         await addNewTemplate(templateObject).then((res) => {
@@ -126,7 +224,20 @@ class ContentTemplateForm extends Component {
     }
 
     handleNameChange(event) {
-        this.setState({ name: event.target.value })
+        const errObjTemp = this.state.errorObj;
+        if (!event.target.value.length) {
+            errObjTemp.name.message = 'Field required';
+            this.setState({isFormValid: false})
+        }
+        if (event.target.value.length) {
+            errObjTemp.name.message = '';
+            this.setState({isFormValid: true})
+        }
+        if (event.target.value.length > 50) {
+            errObjTemp.name.message = 'Must be 50 characters or less';
+            this.setState({isFormValid: false})
+        }
+        this.setState({ name: event.target.value, errorObj: errObjTemp })
     }
 
     handleTypeHeadChange = async (selectedContentTypeObj) => {
@@ -323,6 +434,7 @@ class ContentTemplateForm extends Component {
     // =================== END: Coding of React-Ace ==============
 
     render() {
+        console.log("STATE",this.state)
         return (
             <div className="formContainer show-grid" style={{marginRight:"12vw", marginTop:"2vw"}}>
                 <form onSubmit={this.handleSubmit}>
@@ -334,7 +446,8 @@ class ContentTemplateForm extends Component {
                                 <Link to="/">
                                     <button className="default-btn">{CANCEL_LABEL}</button>
                                 </Link>
-                                <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
+                                {/* <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button> */}
+                                <button className="btn-primary primary-btn mv-2 btn" type="submit" disabled={!this.state.isFormValid} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button>
                             </div>
                         </div>
                     <div className="formContainer col-xs-12 form-group">
@@ -351,14 +464,24 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-10">
+                        <div className={`col-lg-10`}>
                             <Typeahead
                                 id="basic-typeahead-multiple"
                                 onChange={this.handleTypeHeadChange}
                                 options={this.state.contentTypes}
                                 placeholder="Choose..."
                                 selected={this.state.selectedContentType}
+                                className={this.state.errorObj.type.message && 'has-error'}
                             />
+                        </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            {this.state.errorObj.type.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.type.message}</span>
+                                </span>
+                            }
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
@@ -385,6 +508,15 @@ class ContentTemplateForm extends Component {
                                 value={this.state.name}
                                 onChange={this.handleNameChange}
                             />
+                        </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            {this.state.errorObj.name.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.name.message}</span>
+                                </span>
+                            }
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
@@ -452,6 +584,15 @@ class ContentTemplateForm extends Component {
                                 style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
                             />
                         </div>
+                    <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-10">
+                        {this.state.errorObj.editorCoding.message &&
+                            <span className="validation-block">
+                                <span>{this.state.errorObj.editorCoding.message}</span>
+                            </span>
+                        }
+                    </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
                         <div className="col-lg-2" style={{ textAlign: "end" }}>
@@ -478,6 +619,15 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleStyleSheetChange}
                             />
                         </div>
+                    <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-10">
+                        {this.state.errorObj.styleSheet.message &&
+                            <span className="validation-block">
+                                <span>{this.state.errorObj.styleSheet.message}</span>
+                            </span>
+                        }
+                    </div>
                     </div>
 
                 </form>
