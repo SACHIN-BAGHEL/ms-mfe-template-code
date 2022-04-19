@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { EDITORCODINGREQ, MAX25CHAR, MIN3CHAR, NAMEREQ, TYPEREQ } from "../constant/constant";
+import { EDITORCODINGREQ, MAX25CHAR, MIN3CHAR, NAMEREQ, TYPE_REQ } from "../constant/constant";
 
 export const templateSchema = Yup.object().shape({
     templateName: Yup.string()
@@ -10,7 +10,7 @@ export const templateSchema = Yup.object().shape({
         .min(3, MIN3CHAR)
         .required(EDITORCODINGREQ),
     collectionType: Yup.string()
-        .required(TYPEREQ),
+        .required(TYPE_REQ),
     styleSheet: Yup.string(),
 });
 

@@ -32,7 +32,16 @@ export const MIN3CHAR = "Min 3 Char";
 export const MAX25CHAR = "Max 3 Char";
 export const NAMEREQ = "Name Required";
 export const EDITORCODINGREQ = "Editor Coding Required";
-export const TYPEREQ = "Type Required"
+export const TYPE_REQ = "Type required";
+export const FIELD_REQ = "Field required";
+export const MAX50CHAR = "Must be 50 characters or less";
+
+export const ELE_TYPE = {
+    NAME: "name",
+    EDITORCODING: "editorCoding",
+    TYPE: "type"
+}
+
 
 /*********************
  * Editor Vars *******
