@@ -1,13 +1,18 @@
 import axios from "axios";
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwMDE2NjExLCJleHAiOjE2NTI2MDg2MTF9.XDYt_wv0DmQyjriAATWnYywBiZd8Ml89GSJnA3yme1E'
+// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwMDE2NjExLCJleHAiOjE2NTI2MDg2MTF9.XDYt_wv0DmQyjriAATWnYywBiZd8Ml89GSJnA3yme1E'
+// export const getFields = async (contentType) => {
+//     let url = `http://localhost:1337/content-manager/collection-types/${contentType}`;
+//     const { data: { results } } = await axios.get(url, {
+//         headers: {
+//             'Authorization': `Bearer ${token}`
+//         }
+//     });
+
 export const getFields = async (contentType) => {
-    let url = `http://localhost:1337/content-manager/collection-types/${contentType}`;
-    const { data: { results } } = await axios.get(url, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
+   let url = `http://172.40.0.142:1337/content-manager/collection-types/${contentType}`;
+    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, 'EntKcToken') 
+   );
 
     const content = {};
     if (results && results.length) {
