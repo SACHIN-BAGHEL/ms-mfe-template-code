@@ -30,6 +30,8 @@ class TemplateDataTable extends Component {
         };
     }
 
+
+
     onPageInput = e => {
         // todo make common method
         const newPaginationState = Object.assign({}, this.state.pagination);
@@ -193,7 +195,8 @@ class TemplateDataTable extends Component {
                                                             disabled={false}
                                                             divider={false}
                                                             header={false}
-                                                            onClick={() => this.props.history.push(`/edit-template/${el.code || el.attributes.code}`)}
+                                                            // onClick={() => this.props.history.push(`/edit-template/${el.code || el.attributes.code}`,{tid:el.id})}
+                                                            onClick={() => this.props.history.push(`/edit-template/${el.id}`)}
                                                         >
                                                             {EDIT_LABEL}
                                                         </MenuItem>

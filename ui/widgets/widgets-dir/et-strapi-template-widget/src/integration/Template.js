@@ -1,4 +1,4 @@
-import { deleteData, getData, postData } from "./Http";
+import { deleteData, getData, postData, putData } from "./Http";
 import { checkForErrorsAndSendResponse } from "./Integration";
 
 // Template endpoints
@@ -30,6 +30,11 @@ export const getAllTemplates = async (page, pageSize, selectedContentType) => {
  */
 export const addNewTemplate = async (templateData) => {
     const { data, isError } = await postData(templateBaseUrl, templateData);
+    return checkForErrorsAndSendResponse(data, isError, "newTemplate")
+}
+
+export const editTemplate = async (templateData,id) => {
+    const { data, isError } = await putData(templateBaseUrl+id, templateData);
     return checkForErrorsAndSendResponse(data, isError, "newTemplate")
 }
 

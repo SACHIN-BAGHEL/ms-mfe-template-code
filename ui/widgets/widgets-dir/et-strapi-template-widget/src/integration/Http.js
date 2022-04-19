@@ -30,6 +30,19 @@ export const postData = async (url, payload) => {
     return errorCheck(data)
   }
 
+// edits a record. If an ID is provided it modifies the record with the same ID
+export const putData = async (url, payload) => {
+  url = mergeUrl(url)
+  const data = await axios
+    .put(url, payload, addAuthorizationRequestConfig())
+    .then((res) => {
+      return res
+    })
+    .catch((e) => {
+      return e
+    })
+  return errorCheck(data)
+}
 
   export const deleteData = async (url, id) => {
     url = mergeUrl(url, id)
