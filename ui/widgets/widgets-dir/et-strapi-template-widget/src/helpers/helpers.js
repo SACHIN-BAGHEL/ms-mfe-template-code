@@ -1,4 +1,6 @@
-import {ADMIN, AUTHOR, GIT_DOMAIN, MANAGER, MATCHER, USER_ROLES} from './constants'
+import { getStrapiContentTypes } from '../integration/StrapiAPI';
+
+// import {ADMIN, AUTHOR, GIT_DOMAIN, MANAGER, MATCHER, USER_ROLES} from './constants'
 
 export const getKeycloakToken = () => {
     if (window && window.entando && window.entando.keycloak && window.entando.keycloak.authenticated) {
@@ -18,27 +20,27 @@ export const authenticationChanged = (props, prevProps) => {
     return authenticated && changedAuth
 }
 
-export const isHubAdmin = () => {
-    return hasKeycloakClientRole(ADMIN)
-}
+// export const isHubAdmin = () => {
+//     return hasKeycloakClientRole(ADMIN)
+// }
 
-export const isHubAuthor = () => {
-    return hasKeycloakClientRole(AUTHOR)
-}
+// export const isHubAuthor = () => {
+//     return hasKeycloakClientRole(AUTHOR)
+// }
 
-export const isHubManager = () => {
-    return hasKeycloakClientRole(MANAGER)
-}
+// export const isHubManager = () => {
+//     return hasKeycloakClientRole(MANAGER)
+// }
 
-export const isHubUser = () => {
-    return isHubAdmin() || isHubManager() || isHubAuthor()
-}
+// export const isHubUser = () => {
+//     return isHubAdmin() || isHubManager() || isHubAuthor()
+// }
 
-export const getHigherRole = () => {
-    if (isHubAdmin()) return ADMIN
-    if (isHubManager()) return MANAGER
-    if (isHubAuthor()) return AUTHOR
-}
+// export const getHigherRole = () => {
+//     if (isHubAdmin()) return ADMIN
+//     if (isHubManager()) return MANAGER
+//     if (isHubAuthor()) return AUTHOR
+// }
 
 export const getUserName = async () => {
     if (window.entando && window.entando.keycloak && window.entando.keycloak.tokenParsed) {
@@ -77,21 +79,51 @@ export const getDefaultOptions = () => {
     }
 }
 
-export const clickableSSHGitURL= (gitRepoUrl) => {
-    if (gitRepoUrl.startsWith(MATCHER)) {
-        return `${GIT_DOMAIN}${gitRepoUrl.split(':')[1]}`;
-    }
-    return gitRepoUrl;
-}
+// export const clickableSSHGitURL= (gitRepoUrl) => {
+//     if (gitRepoUrl.startsWith(MATCHER)) {
+//         return `${GIT_DOMAIN}${gitRepoUrl.split(':')[1]}`;
+//     }
+//     return gitRepoUrl;
+// }
 
 export const isCurrentUserAuthenticated = () => {
    return window.entando && window.entando.keycloak && window.entando.keycloak.authenticated;
 }
 
-export const isCurrentUserAssignedAValidRole = () => {
-    return USER_ROLES.includes(getHigherRole());
-}
+// export const isCurrentUserAssignedAValidRole = () => {
+//     return USER_ROLES.includes(getHigherRole());
+// }
 
 export const isCurrentUserAssignedAPreferredName = () => {
     return window.entando.keycloak.tokenParsed && window.entando.keycloak.tokenParsed.preferred_username;
+}
+
+/**
+ * Get all collection types and filter them based on api::
+ * @returns 
+ */
+export const getFilteredContentTypes = async () => {
+    let filteredCollectionTypes;
+    const { data: { data } } = await getStrapiContentTypes();
+    if (data.length) {
+        filteredCollectionTypes = data.filter((el) => el.uid.startsWith('api::') && el.isDisplayed);
+    }
+    return filteredCollectionTypes;
+}
+
+/**
+ * Fetch required fields from the filtered collection types
+ * @returns 
+ */
+export const getSanitizedCollectionTypes = async () => {
+    let sanitizedCollectionTypes = [];
+    const data = await getFilteredContentTypes();
+    if (data.length) {
+        data.forEach(element => {
+            if(element) {
+                sanitizedCollectionTypes.push(element.info);
+            }
+        });
+    }
+    return sanitizedCollectionTypes;
 }

@@ -1,36 +1,52 @@
 import axios from "axios";
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ4NDQxMjUwLCJleHAiOjE2NTEwMzMyNTB9.azaYPs05KQR_vkCltU3onTqhSWOuCpMvwaAt4VAcKTg'
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwMDE2NjExLCJleHAiOjE2NTI2MDg2MTF9.XDYt_wv0DmQyjriAATWnYywBiZd8Ml89GSJnA3yme1E'
 export const getFields = async (contentType) => {
-    // const contentType = 'project'
-    const { data: { results } } = await axios.get(`http://localhost:1337/content-manager/collection-types/api::${contentType}.${contentType}?page=1&pageSize=10&sort=Title:ASC`, {
+    let url = `http://localhost:1337/content-manager/collection-types/${contentType}`;
+    const { data: { results } } = await axios.get(url, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
     });
 
-    const fieldsArr = Object.keys(results[0]);
     const content = {};
-    fieldsArr.map((el) => {
-        content[el + "}}"] = [
-            "getTextForLang(\"<LANG_CODE>\")",
-            "text",
-            "textMap(\"<LANG_CODE>\")"
-        ]
-        console.log('EL', el)
-    })
-    let timepass = { 'content': content }
-    console.log("TIMEPASS",timepass)
-    return timepass;
+    if (results && results.length) {
+        const fieldsArr = Object.keys(results[0]);
+
+        fieldsArr.map((el) => {
+            content[el + "}}"] = [
+                "getTextForLang(\"<LANG_CODE>\")",
+                "text",
+                "textMap(\"<LANG_CODE>\")"
+            ]
+        });
+    }
+    let contentObject = { 'content': content }
+    return contentObject;
 }
 
-export const getFieldsTwo = async (contentType) => {
-    // const contentType = 'project'
-    const { data } = await axios.get(`http://localhost:1337/content-manager/collection-types/api::${contentType}.${contentType}?page=1&pageSize=10&sort=Title:ASC`, {
+
+/*********************
+ * Strapi COLLECTION TYPE
+ *********************/
+
+// todo make this method more generic or use the generic method like template declare url in env || const file.
+const strapiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwMDE2NjExLCJleHAiOjE2NTI2MDg2MTF9.XDYt_wv0DmQyjriAATWnYywBiZd8Ml89GSJnA3yme1E';
+
+/**
+ * Get strapi content types
+ * @returns 
+ */
+export const getStrapiContentTypes = async () => {
+    const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
         headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${strapiToken}`
         }
     });
-
     return data;
 }
+
+// export const getStrapiContentTypes = async () => {
+//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, addAuthorizationRequestConfig({}, 'EntKcToken'));
+//     return data;
+// }

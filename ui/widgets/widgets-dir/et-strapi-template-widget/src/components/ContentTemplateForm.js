@@ -8,9 +8,11 @@ import 'brace/theme/tomorrow';
 import 'brace/snippets/html';
 import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
-import { addNewTemplate, getCollectionTypes } from '../integration/Template';
-import { getFields, getFieldsTwo } from '../integration/StrapiAPI';
-import { DICTIONARY, DICTMAPPED } from '../constant/constant';
+import { addNewTemplate } from '../integration/Template';
+import { getFields } from '../integration/StrapiAPI';
+import { CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR, NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG, TEMPLATE_CREATED_SUCCESSFULLY_MSG } from '../constant/constant';
+import { getFilteredContentTypes } from '../helpers/helpers';
+import { withRouter } from "react-router-dom";
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -34,7 +36,7 @@ const aceOnBlur = onBlur => (_event, editor) => {
     }
 };
 
-export default class ContentTemplateForm extends Component {
+class ContentTemplateForm extends Component {
 
     constructor(props) {
         super(props)
@@ -42,11 +44,11 @@ export default class ContentTemplateForm extends Component {
             code: '',
             name: '',
             selectedContentType:[],
-            contentTypeProgram: '',
-            collectionTypes: [],
+            editorCoding: '',
+            contentTypes: [],
             styleSheet: '',
             modalShow: false,
-            obj:{}, 
+            // obj:{}, 
             editor: null,
             dictionaryLoaded: false,
             dictionary: DICTIONARY,
@@ -56,90 +58,92 @@ export default class ContentTemplateForm extends Component {
             attributesList: []
         }
         this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleTypeaheadChangeContentType = this.handleTypeaheadChangeContentType.bind(this);
-        this.handleStyleChange = this.handleStyleChange.bind(this);
-        this.handleContentTypeProgram = this.handleContentTypeProgram.bind(this);
+        this.handleTypeHeadChange = this.handleTypeHeadChange.bind(this);
+        this.handleStyleSheetChange = this.handleStyleSheetChange.bind(this);
+        this.handleEditorCodingChange = this.handleEditorCodingChange.bind(this);
     }
 
     componentDidMount = async () => {
         await this.getCollectionType();
     }
 
+    /**
+     * Get the collection types
+     */
     getCollectionType = async () => {
-        const { data: { data } } = await getCollectionTypes();
-        if (data && data.length) {
-            this.getDataTypeOfAttribute(data);
-            const collectionListData = data.filter((el) => {
-            if (el.uid.startsWith('api::')) {
-                return el.apiID;
-            }
+        const contentList = await getFilteredContentTypes();
+        if (contentList && contentList.length) {
+            const refinedContentTypes = [];
+            contentList.forEach(element => {
+                refinedContentTypes.push({ label: element.info.displayName, uid: element.uid, attributes: element.attributes })
             });
-            const contentTypeRefine = [];
-            collectionListData.length && collectionListData.forEach(element => {
-                contentTypeRefine.push({ label: element.info.pluralName })
-            });
-            const fieldsData = await getFields(contentTypeRefine[0].label.slice(contentTypeRefine[0].label, contentTypeRefine[0].label.length - 1));
-            this.setState({ dictMapped: fieldsData })
-            this.setState({ collectionTypes: contentTypeRefine });
+            this.setState({ contentTypes: refinedContentTypes });
         }
     }
 
     handleSubmit = async (event) => {
-        let obj = 
+        event.preventDefault();
+        let notificationObj = NOTIFICATION_OBJECT;
+        let templateObject =
         {
-            "collectionType": this.state.selectedContentType[0].label,
-            "templateName": this.state.name,
-            "contentShape": this.state.contentTypeProgram,
+            "collectionType": this.state.selectedContentType.length ? this.state.selectedContentType[0].label : '',
+            "templateName": this.state.name ? this.state.name : '',
+            "contentShape": this.state.editorCoding,
             "code": "News7777",
             "styleSheet": this.state.styleSheet
         }
-        this.props.addTemplateHandler(obj);
-        event.preventDefault();
-        // // API Call
-        // const data = {
-        //     code: this.state.code,
-        //     templateName: this.state.name,
-        //     collectionType: this.state.contentType[0],
-        //     contentShape: this.state.contentTypeProgram,
-        // }
-        // await postTemplate(data).then((res) => {
-        //     this.props.history.push('/')
-        // });
-        await addNewTemplate(obj).then((res) => {
-                console.log(res);
-            });
+        // this.props.addTemplateHandler(obj); TODO: for resuble case.
+
+        await addNewTemplate(templateObject).then((res) => {
+            if (res.isError) {
+                notificationObj.type = NOTIFICATION_TYPE.ERROR;
+                if (res.errorBody && res.errorBody.response && res.errorBody.response.data && res.errorBody.response.data.errors && res.errorBody.response.data.errors.length) {
+                    notificationObj.message = res.errorBody.response.data.errors.join(", ");
+                } else {
+                    notificationObj.message = SOMETHING_WENT_WRONG_MSG;
+                }
+                notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
+            } else {
+                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
+                notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
+                notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
+                // this.props.history.push('/');// TODO: use this, kamlesh
+            }
+            this.props.showNotification(notificationObj);
+        });
     }
 
-    getDataTypeOfAttribute(data) {
-        data.map(el => {
-            if (el.uid.startsWith('api::')) {
-                let refine = [];
-                for (let attr in el.attributes) {
-                    refine.push({ [attr]: el.attributes[attr]['type'] });
-                }
-                this.setState({attributesList: refine})
-            }
-        });
+    /**
+     * Get code and type fields of attributes
+     */
+    getAttributeData(uid) {
+        let refinedAttributes = [];
+        const filteredAttributes = this.state.contentTypes.filter((el) => el.uid === uid);
+        for (let attr in filteredAttributes[0].attributes) {
+            refinedAttributes.push({ [attr]: filteredAttributes[0].attributes[attr]['type'] });
+        }
+        this.setState({ attributesList: refinedAttributes })
     }
 
     handleNameChange(event) {
         this.setState({ name: event.target.value })
-        
     }
 
-    handleTypeaheadChangeContentType = async (selectedContentType) => {
-        if (selectedContentType.length) {
-            const data = await getFields(selectedContentType[0].label.slice(0, selectedContentType[0].label.length - 1));
-            this.setState({ dictMapped: data })
+    handleTypeHeadChange = async (selectedContentTypeObj) => {
+        if (selectedContentTypeObj.length) {
+            this.setState({ selectedContentType: selectedContentTypeObj}, async () => {
+                this.getAttributeData(selectedContentTypeObj[0].uid);
+                const dataForDictMap = await getFields(selectedContentTypeObj[0].uid);
+                this.setState({ dictMapped: dataForDictMap });
+            });
         }
-        this.setState({ selectedContentType: selectedContentType });
     }
 
-    handleContentTypeProgram(value){
-        this.setState({contentTypeProgram: value})
+    handleEditorCodingChange(value){
+        this.setState({editorCoding: value})
     }
 
-    handleStyleChange(event){
+    handleStyleSheetChange(event){
         this.setState({styleSheet: event.target.value});
     }
 
@@ -147,6 +151,7 @@ export default class ContentTemplateForm extends Component {
         this.setState({ modalShow: false });
     }
 
+    // =================== START: Coding of React-Ace ============== 
     onEditorLoaded = (editor) => {
         this.setState({ editor });
 
@@ -315,11 +320,23 @@ export default class ContentTemplateForm extends Component {
         const { contentTemplateCompleter } = this.state;
         langTools.setCompleters([contentTemplateCompleter]);
     }
+    // =================== END: Coding of React-Ace ==============
 
-    render() { 
+    render() {
         return (
-            <div className="formContainer show-grid" style={{marginRight:"12vw"}}>
+            <div className="formContainer show-grid" style={{marginRight:"12vw", marginTop:"2vw"}}>
                 <form onSubmit={this.handleSubmit}>
+                    {/* kamlesh */}
+                <div className="formContainer col-xs-12" align="right" style={{ marginBottom:"2vw"}}>
+                            <div className="col-lg-10" style={{ textAlign: "end" }}>
+                            </div>
+                            <div className="col-lg-2">
+                                <Link to="/">
+                                    <button className="default-btn">{CANCEL_LABEL}</button>
+                                </Link>
+                                <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
+                            </div>
+                        </div>
                     <div className="formContainer col-xs-12 form-group">
                         <div className="col-lg-2" style={{ textAlign: "end" }}>
                             <label htmlFor="id" className="control-label">
@@ -337,9 +354,8 @@ export default class ContentTemplateForm extends Component {
                         <div className="col-lg-10">
                             <Typeahead
                                 id="basic-typeahead-multiple"
-                                onChange={this.handleTypeaheadChangeContentType}
-                                options={this.state.collectionTypes}
-                                // options={[{ label: 'Banner' }, { label: 'News' }, { label: '2 columns' }]}
+                                onChange={this.handleTypeHeadChange}
+                                options={this.state.contentTypes}
                                 placeholder="Choose..."
                                 selected={this.state.selectedContentType}
                             />
@@ -390,7 +406,11 @@ export default class ContentTemplateForm extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.state.attributesList.map(el => (<tr><td>{Object.keys(el)[0]}</td><td>{el[Object.keys(el)[0]]}</td></tr>))}
+                                    {this.state.attributesList.map(el => (
+                                    <tr key={Object.keys(el)[0]}>
+                                        <td>{Object.keys(el)[0]}</td>
+                                        <td>{el[Object.keys(el)[0]]}</td>
+                                    </tr>))}
                                 </tbody>
                             </table>
                         </div>
@@ -426,9 +446,9 @@ export default class ContentTemplateForm extends Component {
                                 enableLiveAutocompletion
                                 enableSnippets
                                 name="UNIQUE_ID_OF_DIV"
-                                onChange={this.handleContentTypeProgram}
+                                onChange={this.handleEditorCodingChange}
                                 onLoad={this.onEditorLoaded}
-                                value={this.state.contentTypeProgram}
+                                value={this.state.editorCoding}
                                 style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
                             />
                         </div>
@@ -455,20 +475,11 @@ export default class ContentTemplateForm extends Component {
                                 placeholder=""
                                 className="form-control RenderTextInput"
                                 value={this.state.styleSheet}
-                                onChange={this.handleStyleChange}
+                                onChange={this.handleStyleSheetChange}
                             />
                         </div>
                     </div>
-                    <div className="formContainer col-xs-12">
-                            <div className="col-lg-10" style={{ textAlign: "end" }}>
-                            </div>
-                            <div className="col-lg-2">
-                                <Link to="/">
-                                    <button className="default-btn">Cancel</button>
-                                </Link>
-                                <button className="default-btn" type="submit">Save</button>
-                            </div>
-                        </div>
+
                 </form>
                 
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"}>
@@ -489,3 +500,5 @@ export default class ContentTemplateForm extends Component {
         )
     }
 }
+
+export default withRouter(ContentTemplateForm);

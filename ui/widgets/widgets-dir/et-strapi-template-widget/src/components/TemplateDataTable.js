@@ -4,14 +4,16 @@ import { DropdownKebab, MenuItem, Spinner } from 'patternfly-react';
 import ModalUI from './ModalUI';
 import { withRouter } from "react-router-dom";
 import PaginationRow from 'patternfly-react/dist/js/components/Pagination/PaginationRow';
-import { getAllTemplates } from '../integration/Template';
-import { LASTPAGE, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS } from '../constant/constant';
+import { getAllTemplates, deleteTemplate } from '../integration/Template';
+import { LASTPAGE, NOTIFICATION_OBJECT, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS, DEL_TEMPLATE_CONFIRM_MSG, DELETE_LABEL, EDIT_LABEL, NOTIFICATION_TYPE } from '../constant/constant';
 
 const perPageOptions = PERPAGEOPTIONS;
 
 class TemplateDataTable extends Component {
+
     constructor(props) {
         super(props);
+
         this.state = {
             templateData: [],
             modalShow: false,
@@ -63,10 +65,22 @@ class TemplateDataTable extends Component {
 
     modalHide = () => this.setState({ modalShow: false });
 
-    handleDelete = async () => {
-        await deleteTemplate(this.state.selectedTempate.code).then((res) => {
+    /**
+     * Method to delete a template
+     */
+     handleDelete = async () => {
+        let notificationObj = NOTIFICATION_OBJECT;
+        await deleteTemplate(this.state.selectedTempate.id).then((res) => {
             this.componentDidMount();
             this.modalHide();
+            if(res.isError) {
+                notificationObj.type = NOTIFICATION_TYPE.ERROR;
+                notificationObj.message = res.errorBody.response.data.message;
+            } else {
+                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
+                notificationObj.message = res.message;
+            }
+            this.props.showNotification(notificationObj);
         });
     }
 
@@ -171,7 +185,7 @@ class TemplateDataTable extends Component {
                                                             header={false}
                                                             onClick={() => this.setState({ modalShow: true, selectedTempate: el })}>
                                                             <span>
-                                                                Delete
+                                                                {DELETE_LABEL}
                                                             </span>
                                                         </MenuItem>
                                                         <MenuItem
@@ -181,7 +195,7 @@ class TemplateDataTable extends Component {
                                                             header={false}
                                                             onClick={() => this.props.history.push(`/edit-template/${el.code || el.attributes.code}`)}
                                                         >
-                                                            Edit
+                                                            {EDIT_LABEL}
                                                         </MenuItem>
                                                     </DropdownKebab>
                                                 </td>
@@ -211,8 +225,15 @@ class TemplateDataTable extends Component {
                             />
                         </div>
                     </Spinner>
-                    <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} />
-                </div>
+                {/* <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} /> */}
+
+                <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
+                    <span aria-hidden="true" className='text-center'>
+                        <h2>Delete  <b> {this.state.selectedTempate && this.state.selectedTempate.templateName && this.state.selectedTempate.templateName} </b></h2>
+                        <h3> {DEL_TEMPLATE_CONFIRM_MSG} </h3>
+                    </span>
+                </ModalUI>
+           </div>
             </>
         )
     }
