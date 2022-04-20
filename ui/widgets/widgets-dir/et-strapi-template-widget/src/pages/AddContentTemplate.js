@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import ContentTemplateForm from '../components/ContentTemplateForm';
 import { TimedToastNotification} from 'patternfly-react';
+import { TOASTER_POSITION } from '../constant/constant';
 
 export default class AddContentTemplate extends Component {
   constructor(props) {
@@ -35,7 +36,7 @@ export default class AddContentTemplate extends Component {
     return (
       <div>
         {/* ------ Show Notifications ------- */}
-        <div id="1" align="right" margin="50px" style={{ zIndex: 1 }}>
+        <div id="1" style={TOASTER_POSITION}>
                 {this.state.notifications.map(notification => (
                 <TimedToastNotification
                   key={notification.key}
@@ -52,7 +53,7 @@ export default class AddContentTemplate extends Component {
 
             {/* ------------------------------------ */}
             </div>
-            <ContentTemplateForm id="2" addTemplateHandler={this.addTemplateHandler} showNotification={this.showNotification}/>
+            <ContentTemplateForm id="2" addNotification={this.props.addNotification} addTemplateHandler={this.addTemplateHandler} showNotification={this.showNotification}/>
       </div>
     )
   }

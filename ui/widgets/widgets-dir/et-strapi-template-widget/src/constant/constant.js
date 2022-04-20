@@ -42,6 +42,7 @@ export const ELE_TYPE = {
     TYPE: "type"
 }
 
+export const TOASTER_POSITION = { }
 
 /*********************
  * Editor Vars *******

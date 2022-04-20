@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import TemplateDataTable from '../components/TemplateDataTable'
 import TemplateSearch from '../components/TemplateSearch'
 import { TimedToastNotification} from 'patternfly-react';
-
+import { TOASTER_POSITION } from '../constant/constant';
+import { v4 as uuidv4 } from 'uuid';
 export default class ListContentTemplates extends Component {
     constructor(props) {
         super(props);
@@ -21,9 +22,17 @@ export default class ListContentTemplates extends Component {
     }
 
     showNotification = (notificationToAdd) => {
-        this.state.notifications.push(notificationToAdd);
-        this.setState({
-            notifications: this.state.notifications
+        // console.log("heck",notificationToAdd)
+        // this.state.notifications.push(notificationToAdd);
+        // this.setState({
+        //     notifications: this.state.notifications
+        // });
+        this.props.addNotification({
+            key: uuidv4(),
+            message:notificationToAdd.message,
+            persistent:notificationToAdd.persistent,
+            timerdelay:notificationToAdd.timerdelay,
+            type:notificationToAdd.type,
         });
     }
 
@@ -34,12 +43,12 @@ export default class ListContentTemplates extends Component {
             <div className={"mv-2"}>
 
             {/* ------ Show Notifications ------- */}
-            <div align="right" margin="50px" style={{ zIndex: 1 }}>
+            <div style={TOASTER_POSITION}>
                 {this.state.notifications.map(notification => (
                 <TimedToastNotification
                     key={notification.key}
                     type={notification.type}
-                    persistent={false}
+                    persistent={true}
                     onDismiss={() => this.removeNotificationAction(notification)}
                     timerdelay={notification.timerdelay}
                 >
