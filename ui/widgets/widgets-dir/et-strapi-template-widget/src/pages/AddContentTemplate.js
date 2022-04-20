@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import ContentTemplateForm from '../components/ContentTemplateForm';
+import { ADD_LABEL } from '../constant/constant';
 
 export default class AddContentTemplate extends Component {
   constructor(props) {
@@ -9,14 +10,9 @@ export default class AddContentTemplate extends Component {
     }
  }
 
- addTemplateHandler=(formData) => {
-  console.log("AddContentTemplate",formData);
-  //Need to call API
- }
-
  render() {
     return (
-      <ContentTemplateForm addNotification={this.props.addNotification} addTemplateHandler={this.addTemplateHandler} />
+      <ContentTemplateForm addNotification={this.props.addNotification} formType={ADD_LABEL}/>
     )
   }
 }

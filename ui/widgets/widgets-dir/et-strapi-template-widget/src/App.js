@@ -51,7 +51,7 @@ export default class App extends Component {
         <BrowserRouter>
           <Route path="/" exact><ListContentTemplates addNotification={this.addNotification} /></Route>
           <Route path="/add-template" exact><AddContentTemplate addNotification={this.addNotification} /></Route>
-          <Route path="/edit-template/:templateId" exact><EditContentTemplate /></Route>
+          <Route path="/edit-template/:templateId" exact><EditContentTemplate addNotification={this.addNotification} /></Route>
         </BrowserRouter>
       </div>
     )
