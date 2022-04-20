@@ -38,7 +38,7 @@ export default class App extends Component {
                   type={el.type}
                   persistent={false}
                   onDismiss={() => this.removeNotification(el.key)}
-                  timerdelay={8000}
+                  timerdelay={el.timerdelay}
                 >
                   <span>
                     {el.message}

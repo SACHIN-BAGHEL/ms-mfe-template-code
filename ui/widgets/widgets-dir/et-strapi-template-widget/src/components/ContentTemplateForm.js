@@ -13,12 +13,10 @@ import { getFields } from '../integration/StrapiAPI';
 import {
     CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
     NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
-    TEMPLATE_CREATED_SUCCESSFULLY_MSG, MAX25CHAR, MIN3CHAR, FIELD_REQ, MAX50CHAR, ELE_TYPE
+    TEMPLATE_CREATED_SUCCESSFULLY_MSG, FIELD_REQ, MAX50CHAR, ELE_TYPE
 } from '../constant/constant';
 import { getFilteredContentTypes } from '../helpers/helpers';
 import { withRouter } from "react-router-dom";
-import { templateSchema } from '../helpers/TemplateSchema';
-import { fillErrors } from '../helpers/fillErrors';
 import { v4 as uuidv4 } from 'uuid';
 
 const langTools = ace.acequire('ace/ext/language_tools');
@@ -110,6 +108,7 @@ class ContentTemplateForm extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         let notificationObj = NOTIFICATION_OBJECT;
+        notificationObj.key = uuidv4();
 
         // this.props.addTemplateHandler(obj); TODO: for resuble case.
         let templateObject =
@@ -131,25 +130,12 @@ class ContentTemplateForm extends Component {
                 }
                 notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
             } else {
-                // notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
-                // notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
-                // notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
-                // {
-                //     key: 1,
-                //     type: 'info',
-                //     persistent: false,
-                //     timerdelay: 8000,
-                //     message: "By default, a toast notification's timer expires after eight seconds."
-                //   },
-                this.props.addNotification({
-                    key: uuidv4(),
-                    type: NOTIFICATION_TYPE.SUCCESS,
-                    timerdelay: NOTIFICATION_TIMER_SUCCESS,
-                    message: TEMPLATE_CREATED_SUCCESSFULLY_MSG
-                })
-                this.props.history.push('/');// TODO: use this, kamlesh
+                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
+                notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
+                notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
+                this.props.history.push('/'); // Navigate to Search screen
             }
-            // this.props.showNotification(notificationObj);
+            this.props.addNotification(notificationObj);
         });
     }
 
@@ -573,6 +559,13 @@ class ContentTemplateForm extends Component {
                                 onBlur={()=>this.onBlurHandler(ELE_TYPE.EDITORCODING)}
                             />
                         </div>
+
+                        <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-10">
+                        <span>(press ctrl + space to open content assist menu)</span>
+                    </div>
+
                     <div className="col-lg-2">
                     </div>
                     <div className="col-lg-10">

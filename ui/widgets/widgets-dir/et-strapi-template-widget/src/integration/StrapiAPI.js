@@ -1,18 +1,17 @@
 import axios from "axios";
+import { KC_TOKEN_PREFIX, STRAPI_COLTYPE_URL, STRAPI_CONTYPE_URL } from "../constant/constant";
+import { addAuthorizationRequestConfig } from "./Integration";
 
-// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwMDE2NjExLCJleHAiOjE2NTI2MDg2MTF9.XDYt_wv0DmQyjriAATWnYywBiZd8Ml89GSJnA3yme1E'
-// export const getFields = async (contentType) => {
-//     let url = `http://localhost:1337/content-manager/collection-types/${contentType}`;
-//     const { data: { results } } = await axios.get(url, {
-//         headers: {
-//             'Authorization': `Bearer ${token}`
-//         }
-//     });
+const strapiBaseUrl = `${process.env.STRAPI_APP_PUBLIC_API_URL}`;
 
+/**
+ * Get attribute fields of given content type from strapi
+ * @param {*} contentType 
+ * @returns 
+ */
 export const getFields = async (contentType) => {
-   let url = `http://172.40.0.142:1337/content-manager/collection-types/${contentType}`;
-    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, 'EntKcToken') 
-   );
+    const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO: use this through proxy 
+    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
 
     const content = {};
     if (results && results.length) {
@@ -35,23 +34,26 @@ export const getFields = async (contentType) => {
  * Strapi COLLECTION TYPE
  *********************/
 
-// todo make this method more generic or use the generic method like template declare url in env || const file.
-const strapiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwMDE2NjExLCJleHAiOjE2NTI2MDg2MTF9.XDYt_wv0DmQyjriAATWnYywBiZd8Ml89GSJnA3yme1E';
+/**
+ * Get strapi content types
+ * @returns 
+ */
+//TODO: Remove commentted code later
+// export const getStrapiContentTypes = async () => {
+//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
+//         headers: {
+//             'Authorization': `Bearer ${token}`
+//         }
+//     });
+//     return data;
+// }
 
 /**
  * Get strapi content types
  * @returns 
  */
 export const getStrapiContentTypes = async () => {
-    const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
-        headers: {
-            'Authorization': `Bearer ${strapiToken}`
-        }
-    });
+    const url = `${strapiBaseUrl}/content-manager/content-types`; //TODO: use this through proxy
+    const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
     return data;
 }
-
-// export const getStrapiContentTypes = async () => {
-//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, addAuthorizationRequestConfig({}, 'EntKcToken'));
-//     return data;
-// }
