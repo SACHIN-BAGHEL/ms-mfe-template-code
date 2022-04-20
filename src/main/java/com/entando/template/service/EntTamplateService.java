@@ -94,7 +94,6 @@ public class EntTamplateService {
 		//Temporary code
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
 		String string  = dateFormat.format(new Date());
-		System.out.println(string);
 		toSave.setCode(string);
 
 		toSave.setCreatedAt(LocalDateTime.now());
@@ -109,7 +108,7 @@ public class EntTamplateService {
 	 * @return
 	 */
 	public EntTemplate updateTemplate(EntTemplate toUpdate, TemplateRequestView reqView) {
-		toUpdate.setCode(reqView.getCode());
+//		toUpdate.setCode(reqView.getCode());
 		toUpdate.setCollectionType(reqView.getCollectionType());
 		toUpdate.setTemplateName(reqView.getTemplateName());
 		toUpdate.setContentShape(reqView.getContentShape());
