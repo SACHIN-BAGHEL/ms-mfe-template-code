@@ -20,11 +20,31 @@ export const TEMPLATE_CREATED_SUCCESSFULLY_MSG = 'Template created successfully'
 export const SOMETHING_WENT_WRONG_MSG = 'Something went wrong, please try again.'
 export const TEMPLATE_UPDATED_MSG = 'Template updated successfully';
 
+export const ADD_LABEL = 'Add';
 export const DELETE_LABEL = 'Delete';
 export const EDIT_LABEL = 'Edit';
 export const CLOSE_LABEL = 'Close';
 export const CANCEL_LABEL = 'Cancel';
 export const SAVE_LABEL = 'Save';
+
+/*********************
+ * Error Messages ****
+ *********************/
+export const MIN3CHAR = "Min 3 Char";
+export const MAX25CHAR = "Max 3 Char";
+export const NAMEREQ = "Name Required";
+export const EDITORCODINGREQ = "Editor Coding Required";
+export const TYPE_REQ = "Type required";
+export const FIELD_REQ = "It is a mandatory field";
+export const MAX50CHAR = "Must be 50 characters or less";
+
+export const ELE_TYPE = {
+    NAME: "name",
+    EDITORCODING: "editorCoding",
+    TYPE: "type"
+}
+
+export const TOASTER_POSITION = { }
 
 /*********************
  * Editor Vars *******
@@ -169,3 +189,7 @@ export const NOTIFICATION_OBJECT =  {
     timerdelay: NOTIFICATION_TIMER_SUCCESS,
     message: ''
 }
+
+export const KC_TOKEN_PREFIX = 'EntKcToken';
+export const STRAPI_CONTYPE_URL = 'http://localhost:1337/content-manager/content-types';
+export const STRAPI_COLTYPE_URL = 'http://localhost:1337/content-manager/collection-types/';

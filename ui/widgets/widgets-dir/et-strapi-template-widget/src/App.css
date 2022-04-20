@@ -40,6 +40,10 @@
     box-shadow: 0 2px 3px rgb(3 3 3 / 10%);
 }
 
+.validation-block {
+    color: red;
+}
+
 /* margin mt = margin-top, mv = margin-vertical */
 .mt-1 {
     margin-top: 1rem;
@@ -64,3 +68,8 @@
     width: 300px !important;
 } */
 
+.exclamation_icon {
+    color: #9c9c9c;
+    font-size: 57.6px;
+    line-height: 57.6px;
+}

@@ -10,9 +10,14 @@ import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
 import { addNewTemplate } from '../integration/Template';
 import { getFields } from '../integration/StrapiAPI';
-import { CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR, NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG, TEMPLATE_CREATED_SUCCESSFULLY_MSG } from '../constant/constant';
+import {
+    CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
+    NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
+    TEMPLATE_CREATED_SUCCESSFULLY_MSG, FIELD_REQ, MAX50CHAR, ELE_TYPE
+} from '../constant/constant';
 import { getFilteredContentTypes } from '../helpers/helpers';
 import { withRouter } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -55,7 +60,26 @@ class ContentTemplateForm extends Component {
             dictList: [],
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
-            attributesList: []
+            attributesList: [],
+            errorObj: {
+                name: {
+                    message: '',
+                    valid: false,
+                },
+                type: {
+                    message: '',
+                    valid: false,
+                },
+                editorCoding: {
+                    message: '',
+                    valid: false,
+                },
+                styleSheet: {
+                    message: '',
+                    valid: false,
+                }
+            },
+            isFormValid: false
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTypeHeadChange = this.handleTypeHeadChange.bind(this);
@@ -84,16 +108,18 @@ class ContentTemplateForm extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         let notificationObj = NOTIFICATION_OBJECT;
+        notificationObj.key = uuidv4();
+
+        // this.props.addTemplateHandler(obj); TODO: for resuble case.
         let templateObject =
         {
             "collectionType": this.state.selectedContentType.length ? this.state.selectedContentType[0].label : '',
             "templateName": this.state.name ? this.state.name : '',
             "contentShape": this.state.editorCoding,
+            // TODO: code
             "code": "News7777",
             "styleSheet": this.state.styleSheet
         }
-        // this.props.addTemplateHandler(obj); TODO: for resuble case.
-
         await addNewTemplate(templateObject).then((res) => {
             if (res.isError) {
                 notificationObj.type = NOTIFICATION_TYPE.ERROR;
@@ -107,9 +133,9 @@ class ContentTemplateForm extends Component {
                 notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
                 notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
                 notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
-                // this.props.history.push('/');// TODO: use this, kamlesh
+                this.props.history.push('/'); // Navigate to Search screen
             }
-            this.props.showNotification(notificationObj);
+            this.props.addNotification(notificationObj);
         });
     }
 
@@ -126,21 +152,54 @@ class ContentTemplateForm extends Component {
     }
 
     handleNameChange(event) {
-        this.setState({ name: event.target.value })
+        const errObjTemp = this.state.errorObj;
+        if (!event.target.value.length) {
+            errObjTemp.name.message = FIELD_REQ;
+            errObjTemp.name.valid = false;
+        }
+        if (event.target.value.length) {
+            errObjTemp.name.message = '';
+            errObjTemp.name.valid = true;
+            this.setState({ isFormValid: true })
+        }
+        if (event.target.value.length > 50) {
+            errObjTemp.name.message = MAX50CHAR;
+            errObjTemp.name.valid = false;
+            this.setState({ isFormValid: false })
+        }
+        this.setState({ name: event.target.value, errorObj: errObjTemp })
     }
 
     handleTypeHeadChange = async (selectedContentTypeObj) => {
+        const errObjTemp = this.state.errorObj;
         if (selectedContentTypeObj.length) {
-            this.setState({ selectedContentType: selectedContentTypeObj}, async () => {
+            errObjTemp.type.valid = true;
+            errObjTemp.type.message = '';
+            this.setState({ errorObj: errObjTemp })
+            this.setState({ selectedContentType: selectedContentTypeObj }, async () => {
                 this.getAttributeData(selectedContentTypeObj[0].uid);
                 const dataForDictMap = await getFields(selectedContentTypeObj[0].uid);
                 this.setState({ dictMapped: dataForDictMap });
             });
+        } else {
+            errObjTemp.type.valid = false;
+            errObjTemp.type.message = FIELD_REQ;
+            this.setState({ errorObj: errObjTemp })
+            this.setState({ selectedContentType: selectedContentTypeObj });
         }
     }
 
-    handleEditorCodingChange(value){
-        this.setState({editorCoding: value})
+    handleEditorCodingChange(value) {
+        const errObjTemp = this.state.errorObj;
+        if (!value.length) {
+            errObjTemp.editorCoding.message = FIELD_REQ;
+            errObjTemp.editorCoding.valid = false;
+        }
+        if (value.length) {
+            errObjTemp.editorCoding.message = '';
+            errObjTemp.editorCoding.valid = true;
+        }
+        this.setState({ editorCoding: value, errorObj: errObjTemp })
     }
 
     handleStyleSheetChange(event){
@@ -149,6 +208,29 @@ class ContentTemplateForm extends Component {
 
     modalHide = () => {
         this.setState({ modalShow: false });
+    }
+
+    onBlurHandler = (elementType) => {
+        const errObjTemp = this.state.errorObj
+        if (elementType === ELE_TYPE.NAME) {
+            if (!this.state.name.length) {
+                errObjTemp.name.valid = false;
+                errObjTemp.name.message = FIELD_REQ;
+            }
+        }
+        else if (elementType === ELE_TYPE.EDITORCODING) {
+            if (!this.state.editorCoding.length) {
+                errObjTemp.editorCoding.valid = false;
+                errObjTemp.editorCoding.message = FIELD_REQ;
+            }
+        }
+        else if (elementType === ELE_TYPE.TYPE) {
+            if (!this.state.selectedContentType.length) {
+                errObjTemp.type.valid = false;
+                errObjTemp.type.message = FIELD_REQ;
+            }
+        }
+        this.setState({ errorObj: errObjTemp })
     }
 
     // =================== START: Coding of React-Ace ============== 
@@ -332,9 +414,11 @@ class ContentTemplateForm extends Component {
                             </div>
                             <div className="col-lg-2">
                                 <Link to="/">
-                                    <button className="default-btn">{CANCEL_LABEL}</button>
+                                    <button className="btn-default btn">{CANCEL_LABEL}</button>
                                 </Link>
-                                <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
+                                {/* <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button> */}
+                                <button className="btn-primary btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button>
+                                {/* <button className="btn-primary primary-btn mv-2 btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button> */}
                             </div>
                         </div>
                     <div className="formContainer col-xs-12 form-group">
@@ -351,14 +435,25 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-10">
+                        <div className={`col-lg-10`}>
                             <Typeahead
                                 id="basic-typeahead-multiple"
                                 onChange={this.handleTypeHeadChange}
                                 options={this.state.contentTypes}
                                 placeholder="Choose..."
                                 selected={this.state.selectedContentType}
+                                className={this.state.errorObj.type.message && 'has-error'}
+                                onBlur={()=>this.onBlurHandler(ELE_TYPE.TYPE)}
                             />
+                        </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            {this.state.errorObj.type.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.type.message}</span>
+                                </span>
+                            }
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
@@ -375,7 +470,7 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-10">
+                        <div className={`col-lg-10 ${this.state.errorObj.name.message && 'has-error'}`}>
                             <input
                                 name="id"
                                 type="text"
@@ -384,7 +479,17 @@ class ContentTemplateForm extends Component {
                                 className="form-control RenderTextInput"
                                 value={this.state.name}
                                 onChange={this.handleNameChange}
+                                onBlur={()=>this.onBlurHandler(ELE_TYPE.NAME)}
                             />
+                        </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            {this.state.errorObj.name.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.name.message}</span>
+                                </span>
+                            }
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
@@ -450,8 +555,25 @@ class ContentTemplateForm extends Component {
                                 onLoad={this.onEditorLoaded}
                                 value={this.state.editorCoding}
                                 style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
+                                onBlur={()=>this.onBlurHandler(ELE_TYPE.EDITORCODING)}
                             />
                         </div>
+
+                        <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-10">
+                        <span>(press ctrl + space to open content assist menu)</span>
+                    </div>
+
+                    <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-10">
+                        {this.state.errorObj.editorCoding.message &&
+                            <span className="validation-block">
+                                <span>{this.state.errorObj.editorCoding.message}</span>
+                            </span>
+                        }
+                    </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
                         <div className="col-lg-2" style={{ textAlign: "end" }}>
@@ -478,6 +600,15 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleStyleSheetChange}
                             />
                         </div>
+                    <div className="col-lg-2">
+                    </div>
+                    <div className="col-lg-10">
+                        {this.state.errorObj.styleSheet.message &&
+                            <span className="validation-block">
+                                <span>{this.state.errorObj.styleSheet.message}</span>
+                            </span>
+                        }
+                    </div>
                     </div>
 
                 </form>
