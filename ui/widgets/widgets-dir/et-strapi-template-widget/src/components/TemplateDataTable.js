@@ -5,7 +5,8 @@ import ModalUI from './ModalUI';
 import { withRouter } from "react-router-dom";
 import PaginationRow from 'patternfly-react/dist/js/components/Pagination/PaginationRow';
 import { getAllTemplates, deleteTemplate } from '../integration/Template';
-import { LASTPAGE, NOTIFICATION_OBJECT, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS, DEL_TEMPLATE_CONFIRM_MSG, DELETE_LABEL, EDIT_LABEL, NOTIFICATION_TYPE } from '../constant/constant';
+import { LASTPAGE, NOTIFICATION_OBJECT, PAGE, PAGECHANGEVALUE, PAGEINPUT, PAGESIZE, PERPAGEOPTIONS, TOTALITEMS, DEL_TEMPLATE_CONFIRM_MSG, DELETE_LABEL, EDIT_LABEL, NOTIFICATION_TYPE, NOTIFICATION_TIMER_ERROR, ADD_LABEL } from '../constant/constant';
+import { v4 as uuidv4 } from 'uuid';
 
 const perPageOptions = PERPAGEOPTIONS;
 
@@ -72,17 +73,19 @@ class TemplateDataTable extends Component {
      */
      handleDelete = async () => {
         let notificationObj = NOTIFICATION_OBJECT;
+        notificationObj.key = uuidv4(),
         await deleteTemplate(this.state.selectedTempate.id).then((res) => {
             this.componentDidMount();
             this.modalHide();
             if(res.isError) {
                 notificationObj.type = NOTIFICATION_TYPE.ERROR;
                 notificationObj.message = res.errorBody.response.data.message;
+                notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
             } else {
                 notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
                 notificationObj.message = res.message;
             }
-            this.props.showNotification(notificationObj);
+            this.props.addNotification(notificationObj);
         });
     }
 
@@ -150,7 +153,7 @@ class TemplateDataTable extends Component {
                         <div className="col-lg-1 mv-2">
                             <Link to="/add-template">
                                 <button className="btn-primary primary-btn mv-2 btn">
-                                    <span>Add</span>
+                                    <span>{ADD_LABEL}</span>
                                 </button>
                             </Link>
                         </div>
@@ -231,10 +234,16 @@ class TemplateDataTable extends Component {
                 {/* <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} /> */}
 
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
-                    <span aria-hidden="true" className='text-center'>
+                    <div className="well">
+                        <span aria-hidden="true" className='text-center'>
+                        <div className="exclamation_icon">
+                            <span aria-hidden="true" className="fa fa-exclamation"></span>
+                        </div>
+
                         <h2>Delete  <b> {this.state.selectedTempate && this.state.selectedTempate.templateName && this.state.selectedTempate.templateName} </b></h2>
                         <h3> {DEL_TEMPLATE_CONFIRM_MSG} </h3>
-                    </span>
+                        </span>
+                    </div>
                 </ModalUI>
            </div>
             </>
