@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import EditContentTemplateForm from '../components/EditContentTemplateForm';
-import { TimedToastNotification} from 'patternfly-react';
+import React, { Component } from 'react';
+import ContentTemplateForm from '../components/ContentTemplateForm';
+import { EDIT_LABEL } from '../constant/constant';
 
 export default class EditContentTemplate extends Component {
     constructor(props) {
@@ -25,33 +25,10 @@ export default class EditContentTemplate extends Component {
         });
     }
 
-    editTemplateHandler=(formData) =>{
-        console.log("editContentTemplate",formData);
-        //Need to call API
-      }
-
     render() {
         return (
             <div>
-                {/* ------ Show Notifications ------- */}
-                <div id="1" align="right" margin="50px" style={{ zIndex: 1 }}>
-                        {this.state.notifications.map(notification => (
-                        <TimedToastNotification
-                        key={notification.key}
-                        type={notification.type}
-                        persistent={false}
-                        onDismiss={() => this.removeNotificationAction(notification)}
-                        timerdelay={notification.timerdelay}
-                        >
-                        <span>
-                            {notification.header && <strong>{notification.header}<br></br></strong>}
-                            {notification.message}
-                        </span>
-                        </TimedToastNotification>))}
-
-                {/* ------------------------------------ */}
-                </div>
-                <EditContentTemplateForm id="2" editTemplateHandler={this.editTemplateHandler} showNotification={this.showNotification}/>
+                <ContentTemplateForm formType={EDIT_LABEL} addNotification={this.props.addNotification} />
             </div>
         )
     }

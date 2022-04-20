@@ -231,7 +231,6 @@ class TemplateDataTable extends Component {
                             />
                         </div>
                     </Spinner>
-                {/* <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} handleDelete={this.handleDelete} selectedTemp={this.state.selectedTempate} /> */}
 
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
                     <div className="well">
@@ -240,7 +239,7 @@ class TemplateDataTable extends Component {
                             <span aria-hidden="true" className="fa fa-exclamation"></span>
                         </div>
 
-                        <h2>Delete  <b> {this.state.selectedTempate && this.state.selectedTempate.templateName && this.state.selectedTempate.templateName} </b></h2>
+                        <h2>Delete  <b style={{wordBreak: "break-word"}}> {this.state.selectedTempate && this.state.selectedTempate.templateName && this.state.selectedTempate.templateName} </b></h2>
                         <h3> {DEL_TEMPLATE_CONFIRM_MSG} </h3>
                         </span>
                     </div>
