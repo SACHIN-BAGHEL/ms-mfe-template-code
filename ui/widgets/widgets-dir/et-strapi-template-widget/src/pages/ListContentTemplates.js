@@ -3,7 +3,7 @@ import TemplateDataTable from '../components/TemplateDataTable'
 import TemplateSearch from '../components/TemplateSearch'
 import { TimedToastNotification} from 'patternfly-react';
 import { TOASTER_POSITION } from '../constant/constant';
-
+import { v4 as uuidv4 } from 'uuid';
 export default class ListContentTemplates extends Component {
     constructor(props) {
         super(props);
@@ -22,9 +22,17 @@ export default class ListContentTemplates extends Component {
     }
 
     showNotification = (notificationToAdd) => {
-        this.state.notifications.push(notificationToAdd);
-        this.setState({
-            notifications: this.state.notifications
+        // console.log("heck",notificationToAdd)
+        // this.state.notifications.push(notificationToAdd);
+        // this.setState({
+        //     notifications: this.state.notifications
+        // });
+        this.props.addNotification({
+            key: uuidv4(),
+            message:notificationToAdd.message,
+            persistent:notificationToAdd.persistent,
+            timerdelay:notificationToAdd.timerdelay,
+            type:notificationToAdd.type,
         });
     }
 

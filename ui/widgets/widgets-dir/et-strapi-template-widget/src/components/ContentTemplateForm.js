@@ -19,6 +19,7 @@ import { getFilteredContentTypes } from '../helpers/helpers';
 import { withRouter } from "react-router-dom";
 import { templateSchema } from '../helpers/TemplateSchema';
 import { fillErrors } from '../helpers/fillErrors';
+import { v4 as uuidv4 } from 'uuid';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -130,12 +131,25 @@ class ContentTemplateForm extends Component {
                 }
                 notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
             } else {
-                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
-                notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
-                notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
-                // this.props.history.push('/');// TODO: use this, kamlesh
+                // notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
+                // notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
+                // notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
+                // {
+                //     key: 1,
+                //     type: 'info',
+                //     persistent: false,
+                //     timerdelay: 8000,
+                //     message: "By default, a toast notification's timer expires after eight seconds."
+                //   },
+                this.props.addNotification({
+                    key: uuidv4(),
+                    type: NOTIFICATION_TYPE.SUCCESS,
+                    timerdelay: NOTIFICATION_TIMER_SUCCESS,
+                    message: TEMPLATE_CREATED_SUCCESSFULLY_MSG
+                })
+                this.props.history.push('/');// TODO: use this, kamlesh
             }
-            this.props.showNotification(notificationObj);
+            // this.props.showNotification(notificationObj);
         });
     }
 
