@@ -11,7 +11,8 @@ const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
  */
 export const getFields = async (contentType) => {
     const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO: use this through proxy 
-    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
 
     const content = {};
     if (results && results.length) {
@@ -54,6 +55,7 @@ export const getFields = async (contentType) => {
  */
 export const getStrapiContentTypes = async () => {
     const url = `${strapiBaseUrl}/content-manager/content-types`; //TODO: use this through proxy
-    const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    const data = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
     return data;
 }

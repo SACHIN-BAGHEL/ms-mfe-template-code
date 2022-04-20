@@ -15,6 +15,9 @@ module.exports = function(app) {
         '/strapi',
         createProxyMiddleware({
             target: 'http://localhost:1337',
+            pathRewrite: {
+                '^/strapi': '', // remove base path
+            },
             changeOrigin: true,
         })
     );

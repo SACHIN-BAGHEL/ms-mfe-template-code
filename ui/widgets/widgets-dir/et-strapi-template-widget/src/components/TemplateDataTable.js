@@ -233,8 +233,8 @@ class TemplateDataTable extends Component {
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} type={'delete'} handleDelete={this.handleDelete} title={"Delete Template"}>
                     <div className="well">
                         <span aria-hidden="true" className='text-center'>
-                        <div class="exclamation_icon">
-                            <span aria-hidden="true" class="fa fa-exclamation"></span>
+                        <div className="exclamation_icon">
+                            <span aria-hidden="true" className="fa fa-exclamation"></span>
                         </div>
 
                         <h2>Delete  <b> {this.state.selectedTempate && this.state.selectedTempate.templateName && this.state.selectedTempate.templateName} </b></h2>

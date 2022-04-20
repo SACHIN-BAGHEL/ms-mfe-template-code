@@ -405,7 +405,6 @@ class ContentTemplateForm extends Component {
     // =================== END: Coding of React-Ace ==============
 
     render() {
-        console.log("STATE",this.state)
         return (
             <div className="formContainer show-grid" style={{marginRight:"12vw", marginTop:"2vw"}}>
                 <form onSubmit={this.handleSubmit}>
