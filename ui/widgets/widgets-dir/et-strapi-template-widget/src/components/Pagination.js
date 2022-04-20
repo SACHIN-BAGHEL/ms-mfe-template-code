@@ -79,8 +79,6 @@ export default class Pagination extends Component {
             this.setState({ endingItem: (this.state.numberOfItemsPerPage * this.state.currentPage) })
         }
         this.setState({ startingItem: this.state.numberOfItemsPerPage * (this.state.currentPage - 1) + 1 })
-        // todo api call
-        console.log(this.state.currentPage, this.state.numberOfItemsPerPage)
     }
 
     render() {

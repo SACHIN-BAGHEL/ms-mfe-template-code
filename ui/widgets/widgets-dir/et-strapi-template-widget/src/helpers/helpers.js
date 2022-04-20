@@ -1,7 +1,5 @@
 import { getStrapiContentTypes } from '../integration/StrapiAPI';
 
-// import {ADMIN, AUTHOR, GIT_DOMAIN, MANAGER, MATCHER, USER_ROLES} from './constants'
-
 export const getKeycloakToken = () => {
     if (window && window.entando && window.entando.keycloak && window.entando.keycloak.authenticated) {
         return window.entando.keycloak.token
@@ -59,7 +57,6 @@ export const hasKeycloakClientRole = clientRole => {
             for (const client in resourceAccess) {
                 const item = resourceAccess[client]
                 if (item.roles && item.roles.includes(clientRole)) {
-                    // console.debug("Found role {} with client {} ", clientRole, client)
                     return true
                 }
             }
@@ -126,4 +123,12 @@ export const getSanitizedCollectionTypes = async () => {
         });
     }
     return sanitizedCollectionTypes;
+}
+
+export const filterACollectionType = async (data, collectionType) => {
+    let filteredCollectionType;
+    if (data.length) {
+        filteredCollectionType = data.filter((el) => el.label === collectionType);
+    }
+    return filteredCollectionType;
 }

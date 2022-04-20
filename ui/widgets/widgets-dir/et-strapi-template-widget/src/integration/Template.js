@@ -1,4 +1,4 @@
-import { deleteData, getData, postData } from "./Http";
+import { deleteData, getData, postData, putData } from "./Http";
 import { checkForErrorsAndSendResponse } from "./Integration";
 
 // Template endpoints
@@ -33,6 +33,11 @@ export const addNewTemplate = async (templateData) => {
     return checkForErrorsAndSendResponse(data, isError, "newTemplate")
 }
 
+export const editTemplate = async (templateData,id) => {
+    const { data, isError } = await putData(templateBaseUrl+id, templateData);
+    return checkForErrorsAndSendResponse(data, isError, "newTemplate")
+}
+
 /**
  * Delete a template
  * @param {} page 
@@ -43,4 +48,18 @@ export const addNewTemplate = async (templateData) => {
 export const deleteTemplate = async (templateId) => {
     const { data, isError } = await deleteData(templateBaseUrl, templateId)
     return checkForErrorsAndSendResponse(data, isError, "message")
+}
+
+
+/**
+ * Get template by id
+ * @returns 
+ */
+ export const getTemplateById = async (templateId) => {
+    const { data, isError } = await getData(templateBaseUrl, templateId)
+    // eventHandler(
+    //     isError,
+    //     `${i18n.t('toasterMessage.impossibleToLoadCategory')} ${data ? data.message : ""}`
+    // )
+    return checkForErrorsAndSendResponse(data, isError, "templateData")
 }

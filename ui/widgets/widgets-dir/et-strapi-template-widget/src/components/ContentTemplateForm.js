@@ -1,23 +1,22 @@
-import React, { Component } from 'react';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import ModalUI from './ModalUI';
-import AceEditor from 'react-ace';
 import ace from 'brace';
-import 'brace/mode/html';
-import 'brace/theme/tomorrow';
-import 'brace/snippets/html';
 import 'brace/ext/language_tools';
-import { Link } from 'react-router-dom';
-import { addNewTemplate } from '../integration/Template';
-import { getFields } from '../integration/StrapiAPI';
-import {
-    CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
-    NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
-    TEMPLATE_CREATED_SUCCESSFULLY_MSG, FIELD_REQ, MAX50CHAR, ELE_TYPE
-} from '../constant/constant';
-import { getFilteredContentTypes } from '../helpers/helpers';
-import { withRouter } from "react-router-dom";
+import 'brace/mode/html';
+import 'brace/snippets/html';
+import 'brace/theme/tomorrow';
+import React, { Component } from 'react';
+import AceEditor from 'react-ace';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import { Link, withRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import {
+    ADD_LABEL, CANCEL_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
+    NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
+    TEMPLATE_CREATED_SUCCESSFULLY_MSG, TEMPLATE_UPDATED_MSG
+} from '../constant/constant';
+import { filterACollectionType, getFilteredContentTypes } from '../helpers/helpers';
+import { getFields } from '../integration/StrapiAPI';
+import { addNewTemplate, editTemplate, getTemplateById } from '../integration/Template';
+import ModalUI from './ModalUI';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -61,6 +60,7 @@ class ContentTemplateForm extends Component {
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
             attributesList: [],
+            formType: this.props.formType,
             errorObj: {
                 name: {
                     message: '',
@@ -79,7 +79,6 @@ class ContentTemplateForm extends Component {
                     valid: false,
                 }
             },
-            isFormValid: false
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTypeHeadChange = this.handleTypeHeadChange.bind(this);
@@ -88,13 +87,16 @@ class ContentTemplateForm extends Component {
     }
 
     componentDidMount = async () => {
-        await this.getCollectionType();
+        await this.getCollectionTypes();
+        if (this.state.formType === EDIT_LABEL) {
+            await this.getTemplateById();
+        }
     }
 
     /**
      * Get the collection types
      */
-    getCollectionType = async () => {
+    getCollectionTypes = async () => {
         const contentList = await getFilteredContentTypes();
         if (contentList && contentList.length) {
             const refinedContentTypes = [];
@@ -105,21 +107,61 @@ class ContentTemplateForm extends Component {
         }
     }
 
+    getTemplateById = async () => {
+        const res = await getTemplateById(this.props.match.params.templateId);
+        if (res && !res.isError) {
+            let collectionTypeToPrefill = await filterACollectionType(this.state.contentTypes, res.templateData.collectionType);
+            this.handleTypeHeadChange(collectionTypeToPrefill);
+            const errorObject = this.state.errorObj;
+            for (const key in errorObject) {
+                const element = this.state.errorObj[key];
+                element.valid = true
+            }
+            this.setState({
+                selectedContentType: collectionTypeToPrefill,
+                name: res.templateData.templateName,
+                editorCoding: res.templateData.contentShape,
+                styleSheet: res.templateData.styleSheet,
+                errorObj: errorObject
+            });
+        } else if (res.isError) {
+            let notificationObj = NOTIFICATION_OBJECT;
+            notificationObj.key = uuidv4();
+            notificationObj.type = NOTIFICATION_TYPE.ERROR;
+            if (res.errorBody && res.errorBody.response && res.errorBody.response.data && res.errorBody.response.data.details && res.errorBody.response.data.details.length) {
+                notificationObj.message = res.errorBody.response.data.details.join(", ");
+            } else {
+                notificationObj.message = SOMETHING_WENT_WRONG_MSG;
+            }
+            notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
+            this.props.addNotification(notificationObj);
+        }
+    }
+
     handleSubmit = async (event) => {
         event.preventDefault();
         let notificationObj = NOTIFICATION_OBJECT;
         notificationObj.key = uuidv4();
 
-        // this.props.addTemplateHandler(obj); TODO: for resuble case.
         let templateObject =
         {
             "collectionType": this.state.selectedContentType.length ? this.state.selectedContentType[0].label : '',
             "templateName": this.state.name ? this.state.name : '',
             "contentShape": this.state.editorCoding,
-            // TODO: code
+            // TODO: require clear
             "code": "News7777",
             "styleSheet": this.state.styleSheet
         }
+
+        if (this.state.formType === EDIT_LABEL) {
+            await this.callEditTemplateApi(templateObject, notificationObj);
+        }
+        else if (this.state.formType === ADD_LABEL) {
+            await this.callAddTemplateApi(templateObject, notificationObj);
+        }
+    }
+
+    async callAddTemplateApi(templateObject, notificationObj) {
         await addNewTemplate(templateObject).then((res) => {
             if (res.isError) {
                 notificationObj.type = NOTIFICATION_TYPE.ERROR;
@@ -133,7 +175,27 @@ class ContentTemplateForm extends Component {
                 notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
                 notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
                 notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
-                this.props.history.push('/'); // Navigate to Search screen
+                this.props.history.push('/');
+            }
+            this.props.addNotification(notificationObj);
+        });
+    }
+
+    async callEditTemplateApi(templateObject, notificationObj) {
+        await editTemplate(templateObject, this.props.match.params.templateId).then((res) => {
+            if (res.isError) {
+                notificationObj.type = NOTIFICATION_TYPE.ERROR;
+                if (res.errorBody && res.errorBody.response && res.errorBody.response.data && res.errorBody.response.data.errors && res.errorBody.response.data.errors.length) {
+                    notificationObj.message = res.errorBody.response.data.errors.join(", ");
+                } else {
+                    notificationObj.message = SOMETHING_WENT_WRONG_MSG;
+                }
+                notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
+            } else {
+                notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
+                notificationObj.message = TEMPLATE_UPDATED_MSG;
+                notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
+                this.props.history.push('/');
             }
             this.props.addNotification(notificationObj);
         });
@@ -160,12 +222,10 @@ class ContentTemplateForm extends Component {
         if (event.target.value.length) {
             errObjTemp.name.message = '';
             errObjTemp.name.valid = true;
-            this.setState({ isFormValid: true })
         }
         if (event.target.value.length > 50) {
             errObjTemp.name.message = MAX50CHAR;
             errObjTemp.name.valid = false;
-            this.setState({ isFormValid: false })
         }
         this.setState({ name: event.target.value, errorObj: errObjTemp })
     }
@@ -444,6 +504,7 @@ class ContentTemplateForm extends Component {
                                 selected={this.state.selectedContentType}
                                 className={this.state.errorObj.type.message && 'has-error'}
                                 onBlur={()=>this.onBlurHandler(ELE_TYPE.TYPE)}
+                                disabled={this.state.formType === EDIT_LABEL}
                             />
                         </div>
                         <div className="col-lg-2">
