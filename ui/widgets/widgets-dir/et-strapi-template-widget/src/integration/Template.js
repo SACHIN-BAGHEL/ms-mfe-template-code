@@ -49,3 +49,17 @@ export const deleteTemplate = async (templateId) => {
     const { data, isError } = await deleteData(templateBaseUrl, templateId)
     return checkForErrorsAndSendResponse(data, isError, "message")
 }
+
+
+/**
+ * Get template by id
+ * @returns 
+ */
+ export const getTemplateById = async (templateId) => {
+    const { data, isError } = await getData(templateBaseUrl, templateId)
+    // eventHandler(
+    //     isError,
+    //     `${i18n.t('toasterMessage.impossibleToLoadCategory')} ${data ? data.message : ""}`
+    // )
+    return checkForErrorsAndSendResponse(data, isError, "templateData")
+}

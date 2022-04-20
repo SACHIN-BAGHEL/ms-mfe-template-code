@@ -10,12 +10,12 @@ import 'brace/ext/language_tools';
 import { Link } from 'react-router-dom';
 // import {  getCollectionTypes } from '../integration/Template';
 import { getFields, getFieldsTwo } from '../integration/StrapiAPI';
-import { CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, TEMPLATE_CREATED_SUCCESSFULLY_MSG } from '../constant/constant';
+import { CANCEL_LABEL, DICTIONARY, DICTMAPPED, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR, NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG, TEMPLATE_UPDATED_MSG } from '../constant/constant';
 import * as Yup from "yup";
 import { useParams } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
-import { getFilteredContentTypes } from '../helpers/helpers';
-import { addNewTemplate, editTemplate } from '../integration/Template';
+import { filterACollectionType, getFilteredContentTypes } from '../helpers/helpers';
+import { editTemplate, getTemplateById } from '../integration/Template';
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
 const { textCompleter, keyWordCompleter, snippetCompleter } = langTools;
@@ -70,16 +70,31 @@ class EditContentTemplateForm extends Component {
     }
 
     componentDidMount = async () => {
-        await this.getCollectionType();
+        await this.getCollectionTypes();
+        await this.getTemplateById();
         console.log(this.props.match.params)
         this.setState({ tempId: this.props.match.params.templateId });
+    }
 
+    getTemplateById = async () => {
+        const response = await getTemplateById(this.props.match.params.templateId);
+        if(response && !response.isError) {
+            let collectionTypeToPrefill = await filterACollectionType(this.state.contentTypes, response.templateData.collectionType);
+            this.setState({ 
+                selectedContentType: collectionTypeToPrefill, 
+                name: response.templateData.templateName,
+                editorCoding: response.templateData.contentShape,
+                styleSheet: response.templateData.styleSheet});
+
+                this.handleTypeHeadChange(collectionTypeToPrefill);
+            console.log('this.state.response.templateData: ', response.templateData);
+        }
     }
 
     /**
      * Get the collection types
      */
-    getCollectionType = async () => {
+    getCollectionTypes = async () => {
         const contentList = await getFilteredContentTypes();
         if (contentList && contentList.length) {
             const refinedContentTypes = [];
@@ -130,9 +145,6 @@ class EditContentTemplateForm extends Component {
         //     this.props.showNotification(notificationObj);
         // });
 
-
-        
-
         await editTemplate(templateObject,this.state.tempId).then((res) => {
             if (res.isError) {
                 notificationObj.type = NOTIFICATION_TYPE.ERROR;
@@ -144,7 +156,7 @@ class EditContentTemplateForm extends Component {
                 notificationObj.timerdelay = NOTIFICATION_TIMER_ERROR;
             } else {
                 notificationObj.type = NOTIFICATION_TYPE.SUCCESS;
-                notificationObj.message = TEMPLATE_CREATED_SUCCESSFULLY_MSG;
+                notificationObj.message = TEMPLATE_UPDATED_MSG;
                 notificationObj.timerdelay = NOTIFICATION_TIMER_SUCCESS;
                 // this.props.history.push('/');// TODO: use this, kamlesh
             }
@@ -167,10 +179,11 @@ class EditContentTemplateForm extends Component {
     }
 
     handleNameChange(event) {
-        this.setState({ name: event.target.value })
+        this.setState({ name: event.target.value });
     }
 
     handleTypeHeadChange = async (selectedContentTypeObj) => {
+        console.log('2222222: ', selectedContentTypeObj);
         if (selectedContentTypeObj.length) {
             this.setState({ selectedContentType: selectedContentTypeObj}, async () => {
                 this.getAttributeData(selectedContentTypeObj[0].uid);
@@ -399,6 +412,7 @@ class EditContentTemplateForm extends Component {
                                 options={this.state.contentTypes}
                                 placeholder="Choose..."
                                 selected={this.state.selectedContentType}
+                                disabled
                             />
                         </div>
                     </div>

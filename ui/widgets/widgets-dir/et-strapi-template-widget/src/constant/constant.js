@@ -18,6 +18,7 @@ export const NO_TEMPLATE_FOUND = "No template found.";
 export const DEL_TEMPLATE_CONFIRM_MSG = 'Do you really want to delete ?';
 export const TEMPLATE_CREATED_SUCCESSFULLY_MSG = 'Template created successfully';
 export const SOMETHING_WENT_WRONG_MSG = 'Something went wrong, please try again.'
+export const TEMPLATE_UPDATED_MSG = 'Template updated successfully';
 
 export const DELETE_LABEL = 'Delete';
 export const EDIT_LABEL = 'Edit';

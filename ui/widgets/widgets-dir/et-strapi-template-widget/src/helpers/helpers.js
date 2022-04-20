@@ -127,3 +127,11 @@ export const getSanitizedCollectionTypes = async () => {
     }
     return sanitizedCollectionTypes;
 }
+
+export const filterACollectionType = async (data, collectionType) => {
+    let filteredCollectionType;
+    if (data.length) {
+        filteredCollectionType = data.filter((el) => el.label === collectionType && el.uid.toLowerCase().endsWith(collectionType.toLowerCase()));
+    }
+    return filteredCollectionType;
+}
