@@ -2,7 +2,7 @@ import axios from "axios";
 import { KC_TOKEN_PREFIX, STRAPI_COLTYPE_URL, STRAPI_CONTYPE_URL } from "../constant/constant";
 import { addAuthorizationRequestConfig } from "./Integration";
 
-const strapiBaseUrl = `${process.env.STRAPI_APP_PUBLIC_API_URL}`;
+const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
 
 /**
  * Get attribute fields of given content type from strapi

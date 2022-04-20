@@ -11,16 +11,13 @@ module.exports = function(app) {
             changeOrigin: true,
         })
     );
-    // app.use(
-    //     '/strapi-content-api/api',
-    //     createProxyMiddleware({
-    //         target: 'http://localhost:1337',
-    //         // pathRewrite: {
-    //         //     '^/strapi-content-api/api': '/api', // remove base path
-    //         // },
-    //         changeOrigin: true,
-    //     })
-    // );
+    app.use(
+        '/strapi',
+        createProxyMiddleware({
+            target: 'http://localhost:1337',
+            changeOrigin: true,
+        })
+    );
 };
 
 // http://localhost:1337/content-manager/content-types
