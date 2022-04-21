@@ -211,7 +211,29 @@ class ContentTemplateForm extends Component {
         for (let attr in filteredAttributes[0].attributes) {
             refinedAttributes.push({ [attr]: filteredAttributes[0].attributes[attr]['type'] });
         }
-        this.setState({ attributesList: refinedAttributes })
+        this.setState({ attributesList: refinedAttributes });
+        this.getReflectiveFields(filteredAttributes);
+    }
+
+    /**
+     * Get the fields to show in editor on pressing dot with content
+     * @param {*} filteredAttributes 
+     */
+    getReflectiveFields(filteredAttributes) {
+        const content = {};
+        if (filteredAttributes && filteredAttributes.length && filteredAttributes[0].attributes) {
+            const fieldsArr = Object.keys(filteredAttributes[0].attributes);
+
+            fieldsArr.map((el) => {
+                content[el + "}}"] = [
+                    "getTextForLang(\"<LANG_CODE>\")",
+                    "text",
+                    "textMap(\"<LANG_CODE>\")"
+                ]
+            });
+        }
+        const contentObject = { 'content': content }
+        this.setState({ dictMapped: contentObject });
     }
 
     handleNameChange(event) {
@@ -239,8 +261,6 @@ class ContentTemplateForm extends Component {
             this.setState({ errorObj: errObjTemp })
             this.setState({ selectedContentType: selectedContentTypeObj }, async () => {
                 this.getAttributeData(selectedContentTypeObj[0].uid);
-                const dataForDictMap = await getFields(selectedContentTypeObj[0].uid);
-                this.setState({ dictMapped: dataForDictMap });
             });
         } else {
             errObjTemp.type.valid = false;
@@ -469,10 +489,9 @@ class ContentTemplateForm extends Component {
         return (
             <div className="container-fluid" style={{marginTop:"2vw"}}>
                 <form onSubmit={this.handleSubmit}>
-                    {/* kamlesh */}
                     <div className="formContainer col-xs-12" style={{ marginBottom: "2vw" }}>
                         <div className="col-lg-6">
-                            <h1 style={{margin: "auto"}}>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</h1>
+                            <h1 style={{margin: "auto"}}><b>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</b></h1>
                         </div>
                         <div className="col-lg-6">
                             <div className="pull-right">
