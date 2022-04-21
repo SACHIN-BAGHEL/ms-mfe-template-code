@@ -17,6 +17,7 @@ import { filterACollectionType, getFilteredContentTypes } from '../helpers/helpe
 import { getFields } from '../integration/StrapiAPI';
 import { addNewTemplate, editTemplate, getTemplateById } from '../integration/Template';
 import ModalUI from './ModalUI';
+import { FieldLevelHelp } from 'patternfly-react';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 const tokenUtils = ace.acequire('ace/autocomplete/util');
@@ -586,6 +587,14 @@ class ContentTemplateForm extends Component {
                             <label htmlFor="id" className="control-label">
                                 <span className="FormLabel">
                                     <span>Model</span>
+                                    <FieldLevelHelp
+                                        buttonClass=""
+                                        close={undefined}
+                                        content="More info here"
+                                        inline
+                                        placement="top"
+                                        rootClose
+                                    />
                                 </span>
                             </label>
                         </div>
