@@ -9,7 +9,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import { Link, withRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
-    ADD_LABEL, CANCEL_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
+    ADD_LABEL, CANCEL_LABEL, CLOSE_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
     NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
     TEMPLATE_CREATED_SUCCESSFULLY_MSG, TEMPLATE_UPDATED_MSG
 } from '../constant/constant';
@@ -467,24 +467,27 @@ class ContentTemplateForm extends Component {
 
     render() {
         return (
-            <div className="formContainer show-grid" style={{marginRight:"12vw", marginTop:"2vw"}}>
+            <div className="container-fluid" style={{marginTop:"2vw"}}>
                 <form onSubmit={this.handleSubmit}>
                     {/* kamlesh */}
-                <div className="formContainer col-xs-12" align="right" style={{ marginBottom:"2vw"}}>
-                            <div className="col-lg-10" style={{ textAlign: "end" }}>
-                            </div>
-                            <div className="col-lg-2">
+                    <div className="formContainer col-xs-12" style={{ marginBottom: "2vw" }}>
+                        <div className="col-lg-6">
+                            <h1 style={{margin: "auto"}}>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</h1>
+                        </div>
+                        <div className="col-lg-6">
+                            <div className="pull-right">
                                 <Link to="/">
                                     <button className="btn-default btn">{CANCEL_LABEL}</button>
                                 </Link>
                                 {/* <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button> */}
-                                <button className="btn-primary btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button>
-                                {/* <button className="btn-primary primary-btn mv-2 btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button> */}
+                                <button className="btn-primary btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
                             </div>
+                            {/* <button className="btn-primary primary-btn mv-2 btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button> */}
                         </div>
+                    </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-2" style={{ textAlign: "end" }}>
-                            <label htmlFor="id" className="control-label">
+                        <div className="col-lg-1">
+                            <label htmlFor="type" className="control-label">
                                 <span className="FormLabel">
                                     <span>Type</span>
                                     {/* <sup>
@@ -496,7 +499,7 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className={`col-lg-10`}>
+                        <div className={`col-lg-11`}>
                             <Typeahead
                                 id="basic-typeahead-multiple"
                                 onChange={this.handleTypeHeadChange}
@@ -508,9 +511,9 @@ class ContentTemplateForm extends Component {
                                 disabled={this.state.formType === EDIT_LABEL}
                             />
                         </div>
-                        <div className="col-lg-2">
+                        <div className="col-lg-1">
                         </div>
-                        <div className="col-lg-10">
+                        <div className="col-lg-11">
                             {this.state.errorObj.type.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.type.message}</span>
@@ -519,8 +522,8 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-2" style={{ textAlign: "end" }}>
-                            <label htmlFor="id" className="control-label">
+                        <div className="col-lg-1">
+                            <label htmlFor="name" className="control-label">
                                 <span className="FormLabel">
                                     <span>Name</span>
                                     {/* <sup>
@@ -532,7 +535,7 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className={`col-lg-10 ${this.state.errorObj.name.message && 'has-error'}`}>
+                        <div className={`col-lg-11 ${this.state.errorObj.name.message && 'has-error'}`}>
                             <input
                                 name="id"
                                 type="text"
@@ -544,9 +547,9 @@ class ContentTemplateForm extends Component {
                                 onBlur={()=>this.onBlurHandler(ELE_TYPE.NAME)}
                             />
                         </div>
-                        <div className="col-lg-2">
+                        <div className="col-lg-1">
                         </div>
-                        <div className="col-lg-10">
+                        <div className="col-lg-11">
                             {this.state.errorObj.name.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.name.message}</span>
@@ -555,14 +558,14 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-2" style={{ textAlign: "end" }}>
-                            <label htmlFor="id" className="control-label">
+                        <div className="col-lg-1">
+                            <label htmlFor="attributes" className="control-label">
                                 <span className="FormLabel">
                                     <span>Attributes</span>
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-10">
+                        <div className="col-lg-11">
                             <table className="table dataTable table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -583,29 +586,29 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-2" style={{ textAlign: "end" }}>
-                            <label htmlFor="id" className="control-label">
+                        <div className="col-lg-1">
+                            <label htmlFor="modal" className="control-label">
                                 <span className="FormLabel">
                                     <span>Model</span>
                                     <FieldLevelHelp
                                         buttonClass=""
                                         close={undefined}
-                                        content="More info here"
+                                        content="Defines the HTML content structure using the content elements defined by the given content type."
                                         inline
-                                        placement="top"
+                                        placement="right"
                                         rootClose
                                     />
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-10">
+                        <div className="col-lg-11">
                             <button type="button" onClick={() => this.setState({ modalShow: true })} className="btn btn-success">Inline editing assistant</button>
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-2" style={{ textAlign: "end" }}>
+                        <div className="col-lg-1">
                         </div>
-                        <div className="col-lg-10">
+                        <div className="col-lg-11">
                             <AceEditor
                                 mode="html"
                                 theme="tomorrow"
@@ -629,15 +632,15 @@ class ContentTemplateForm extends Component {
                             />
                         </div>
 
-                        <div className="col-lg-2">
+                        <div className="col-lg-1">
                     </div>
-                    <div className="col-lg-10">
+                    <div className="col-lg-11">
                         <span>(press ctrl + space to open content assist menu)</span>
                     </div>
 
-                    <div className="col-lg-2">
+                    <div className="col-lg-1">
                     </div>
-                    <div className="col-lg-10">
+                    <div className="col-lg-11">
                         {this.state.errorObj.editorCoding.message &&
                             <span className="validation-block">
                                 <span>{this.state.errorObj.editorCoding.message}</span>
@@ -646,8 +649,8 @@ class ContentTemplateForm extends Component {
                     </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-2" style={{ textAlign: "end" }}>
-                            <label htmlFor="id" className="control-label">
+                        <div className="col-lg-1">
+                            <label htmlFor="stylesheet" className="control-label">
                                 <span className="FormLabel">
                                     <span>Style Sheet</span>
                                     {/* <sup>
@@ -659,7 +662,7 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-10">
+                        <div className="col-lg-11">
                             <input
                                 name="id"
                                 type="text"
@@ -670,9 +673,9 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleStyleSheetChange}
                             />
                         </div>
-                    <div className="col-lg-2">
+                    <div className="col-lg-1">
                     </div>
-                    <div className="col-lg-10">
+                    <div className="col-lg-11">
                         {this.state.errorObj.styleSheet.message &&
                             <span className="validation-block">
                                 <span>{this.state.errorObj.styleSheet.message}</span>
@@ -683,7 +686,7 @@ class ContentTemplateForm extends Component {
 
                 </form>
                 
-                <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"}>
+                <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"} cancelButtonLabel={CLOSE_LABEL}>
                     <span>
                         Provides an example on how to activate <strong>INLINE EDITING</strong> for Entando labels<br /><br />
                         <ol>
