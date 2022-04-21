@@ -14,7 +14,6 @@ public class TemplateResponseView {
 	private String templateName;
 	private String collectionType;
 	private String contentShape;
-	private String code;
 	private String styleSheet;
 
 	@JsonFormat(pattern=ApplicationConstants.TEMPLATE_CREATED_DATE_FORMAT)
@@ -31,7 +30,6 @@ public class TemplateResponseView {
 		this.templateName = entity.getTemplateName();
 		this.collectionType = entity.getCollectionType();
 		this.contentShape = entity.getContentShape();
-		this.code = entity.getCode();
 		this.styleSheet = entity.getStyleSheet();
 		this.createdAt = entity.getCreatedAt();
 		this.updatedAt = entity.getUpdatedAt();

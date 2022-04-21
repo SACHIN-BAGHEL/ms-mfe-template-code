@@ -18,17 +18,13 @@ public class TemplateRequestView {
 	@Size(min = 1, max = ApplicationConstants.TEMPLATE_NAME_MAX_LENGTH, message = "Max char length for templateName: "+ ApplicationConstants.TEMPLATE_NAME_MAX_LENGTH)
 	private String templateName;
 
+	@NotEmpty(message = "contentShape is mandatory field")
 	private String contentShape;
-
-//	@NotEmpty(message = "code is mandatory field")
-	private String code;
-
 	private String styleSheet;
 
 	public EntTemplate createEntity(TemplateRequestView templateRequestView, Long id) {
 		EntTemplate entity = new EntTemplate();
 		entity.setId(id);
-		entity.setCode(templateRequestView.getCode());
 		entity.setCollectionType(templateRequestView.getCollectionType());
 		entity.setTemplateName(templateRequestView.getTemplateName());
 		entity.setContentShape(templateRequestView.getContentShape());
