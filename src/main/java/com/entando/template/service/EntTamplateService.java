@@ -1,9 +1,7 @@
 package com.entando.template.service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.entando.template.config.ApplicationConstants;
-import com.entando.template.exception.DuplicateTemplateCodeException;
 import com.entando.template.persistence.EntTemplateRepository;
 import com.entando.template.persistence.entity.EntTemplate;
 import com.entando.template.request.TemplateRequestView;
@@ -57,7 +54,6 @@ public class EntTamplateService {
 		if (pageSize == 0) {
 			pageable = Pageable.unpaged();
 		} else {
-//			paging = PageRequest.of(pageNum, pageSize, Sort.by(new Sort.Order(Sort.Direction.ASC, "bundleGroup.name")).and(Sort.by("lastUpdated").descending()));
 			pageable = PageRequest.of(pageNum, pageSize, Sort.by(new Sort.Order(Sort.Direction.ASC, ApplicationConstants.TEMPLATE_SORT_PARAM_TEMPLATE_NAME))
 					.and(Sort.by(ApplicationConstants.TEMPLATE_SORT_PARAM_UPDATAED_AT).descending()));
 		}
@@ -87,20 +83,12 @@ public class EntTamplateService {
 	 * @param toSave
 	 * @return
 	 */
-	public EntTemplate createTemplate(EntTemplate toSave) throws DuplicateTemplateCodeException {
-//		if(templateRepository.existsByCode(toSave.getCode().trim())) {
-//			throw new DuplicateTemplateCodeException(ApplicationConstants.TEMPLATE_ALREADY_EXISTS_ERR_MSG);
-//		}
-		//Temporary code
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
-		String string  = dateFormat.format(new Date());
-		toSave.setCode(string);
-
+	public EntTemplate createTemplate(EntTemplate toSave) {
 		toSave.setCreatedAt(LocalDateTime.now());
 		toSave.setUpdatedAt(LocalDateTime.now());
 		return templateRepository.save(toSave);
 	}
-	
+
 	/**
 	 * Update a template
 	 * @param toUpdate
@@ -108,7 +96,6 @@ public class EntTamplateService {
 	 * @return
 	 */
 	public EntTemplate updateTemplate(EntTemplate toUpdate, TemplateRequestView reqView) {
-//		toUpdate.setCode(reqView.getCode());
 		toUpdate.setCollectionType(reqView.getCollectionType());
 		toUpdate.setTemplateName(reqView.getTemplateName());
 		toUpdate.setContentShape(reqView.getContentShape());
@@ -137,7 +124,6 @@ public class EntTamplateService {
 		page.getContent().stream().forEach((entity) -> {
 			TemplateResponseView viewObj = new TemplateResponseView();
 			viewObj.setId(entity.getId());
-			viewObj.setCode(entity.getCode());
 			viewObj.setCollectionType(entity.getCollectionType());
 			viewObj.setTemplateName(entity.getTemplateName());
 			viewObj.setContentShape(entity.getContentShape());

@@ -35,7 +35,7 @@ export default class ModalUI extends Component {
                         className="btn-cancel"
                         onClick={this.props.modalHide}
                     >
-                        {CANCEL_LABEL}
+                        {this.props.cancelButtonLabel ? this.props.cancelButtonLabel : CANCEL_LABEL}
                     </Button>
                     {this.props.type === 'delete' && <Button
                         bsStyle="danger"

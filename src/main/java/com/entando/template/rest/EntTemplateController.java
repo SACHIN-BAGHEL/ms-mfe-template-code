@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entando.template.config.ApplicationConstants;
-import com.entando.template.exception.DuplicateTemplateCodeException;
 import com.entando.template.exception.TemplateNotFoundException;
 import com.entando.template.persistence.entity.EntTemplate;
 import com.entando.template.request.TemplateRequestView;
@@ -93,8 +92,6 @@ public class EntTemplateController {
 		try {
 			EntTemplate entity = entTamplateService.createTemplate(templateReqView.createEntity(templateReqView, null));
 			return new ResponseEntity<>(new TemplateResponseView(entity), HttpStatus.CREATED);
-		} catch (DuplicateTemplateCodeException dupEx) {
-			throw new DuplicateTemplateCodeException(dupEx.getMessage());
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}

@@ -28,12 +28,8 @@ public class EntTemplate {
 	@Column(nullable = false, length = 600)
 	private String collectionType;
 
-	@Column(nullable = false, length = 600)
+	@Column(columnDefinition="TEXT", nullable = false)
 	private String contentShape;
-
-//	@Column(nullable = false, unique = true)
-	@Column(nullable = true, unique = false)
-	private String code;
 
 	@Column(nullable = true)
 	private String styleSheet;
@@ -57,32 +53,21 @@ public class EntTemplate {
 		if (getClass() != obj.getClass())
 			return false;
 		EntTemplate other = (EntTemplate) obj;
-		return Objects.equals(code, other.code) && Objects.equals(collectionType, other.collectionType)
-				&& Objects.equals(contentShape, other.contentShape) && Objects.equals(createdAt, other.createdAt)
-				&& Objects.equals(id, other.id) && Objects.equals(styleSheet, other.styleSheet)
-				&& Objects.equals(templateName, other.templateName) && Objects.equals(updatedAt, other.updatedAt);
+		return Objects.equals(collectionType, other.collectionType) && Objects.equals(contentShape, other.contentShape)
+				&& Objects.equals(createdAt, other.createdAt) && Objects.equals(id, other.id)
+				&& Objects.equals(styleSheet, other.styleSheet) && Objects.equals(templateName, other.templateName)
+				&& Objects.equals(updatedAt, other.updatedAt);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(code, collectionType, contentShape, createdAt, id, styleSheet, templateName, updatedAt);
+		return Objects.hash(collectionType, contentShape, createdAt, id, styleSheet, templateName, updatedAt);
 	}
 
 	@Override
 	public String toString() {
 		return "EntTemplate [id=" + id + ", templateName=" + templateName + ", collectionType=" + collectionType
-				+ ", contentShape=" + contentShape + ", code=" + code + ", styleSheet=" + styleSheet + ", createdAt="
-				+ createdAt + ", updatedAt=" + updatedAt + "]";
+				+ ", contentShape=" + contentShape + ", styleSheet=" + styleSheet + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + "]";
 	}
-
-	
-//	public EntTemplate(EntTemplate entity) {
-//		this.id = entity.getId();
-//		this.templateName = entity.getTemplateName();
-//		this.code = entity.getCode();
-//		this.collectionType = entity.getCollectionType();
-//		this.contentShape = entity.getContentShape();
-//		this.styleSheet = entity.getStyleSheet();
-//	}
-	
 }

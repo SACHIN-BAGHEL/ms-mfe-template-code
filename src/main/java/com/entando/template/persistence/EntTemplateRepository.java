@@ -20,12 +20,4 @@ public interface EntTemplateRepository extends JpaRepository<EntTemplate, Long> 
 	 * @return
 	 */
 	Page<EntTemplate> findByCollectionType(String collectionType, Pageable pageable);
-
-	/**
-	 * Check if a template already exists by code
-	 * @param code
-	 * @return
-	 */
-	boolean existsByCode(String code);
-
 }
