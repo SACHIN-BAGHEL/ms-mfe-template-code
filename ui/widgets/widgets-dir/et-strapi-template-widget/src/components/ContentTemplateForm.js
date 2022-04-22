@@ -14,7 +14,7 @@ import {
     TEMPLATE_CREATED_SUCCESSFULLY_MSG, TEMPLATE_UPDATED_MSG
 } from '../constant/constant';
 import { filterACollectionType, getFilteredContentTypes } from '../helpers/helpers';
-import { getFields } from '../integration/StrapiAPI';
+import { getAttributes, getFields } from '../integration/StrapiAPI';
 import { addNewTemplate, editTemplate, getTemplateById } from '../integration/Template';
 import ModalUI from './ModalUI';
 import { FieldLevelHelp } from 'patternfly-react';
@@ -61,6 +61,8 @@ class ContentTemplateForm extends Component {
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
             attributesList: [],
+            attributesListJson: {},
+            attributesListArray : [],
             formType: this.props.formType,
             errorObj: {
                 name: {
@@ -205,14 +207,17 @@ class ContentTemplateForm extends Component {
     /**
      * Get code and type fields of attributes
      */
-    getAttributeData(uid) {
+    async getAttributeData(uid) {
         let refinedAttributes = [];
+        let refinedJson = {};
         const filteredAttributes = this.state.contentTypes.filter((el) => el.uid === uid);
         for (let attr in filteredAttributes[0].attributes) {
             refinedAttributes.push({ [attr]: filteredAttributes[0].attributes[attr]['type'] });
+            refinedJson[attr] = filteredAttributes[0].attributes[attr]['type'];
         }
-        this.setState({ attributesList: refinedAttributes });
-        this.getReflectiveFields(filteredAttributes);
+        const getAtt = await getAttributes(filteredAttributes[0]['uid'])
+        this.setState({ attributesList: refinedAttributes, attributesListJson: refinedJson,attributesListArray: getAtt });
+
     }
 
     /**
@@ -261,6 +266,8 @@ class ContentTemplateForm extends Component {
             this.setState({ errorObj: errObjTemp })
             this.setState({ selectedContentType: selectedContentTypeObj }, async () => {
                 this.getAttributeData(selectedContentTypeObj[0].uid);
+                const dataForDictMap = await getFields(selectedContentTypeObj[0].uid);
+                this.setState({ dictMapped: dataForDictMap });
             });
         } else {
             errObjTemp.type.valid = false;
@@ -595,11 +602,22 @@ class ContentTemplateForm extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.state.attributesList.map(el => (
-                                    <tr key={Object.keys(el)[0]}>
-                                        <td>{Object.keys(el)[0]}</td>
-                                        <td>{el[Object.keys(el)[0]]}</td>
-                                    </tr>))}
+                                    {/* {this.state.attributesList.map(el => {
+                                        console.log('ugly',el);
+                                        (
+                                            <tr key={Object.keys(el)[0]}>
+                                                <td>{Object.keys(el)[0]}</td>
+                                                <td>{el[Object.keys(el)[0]]}</td>
+                                            </tr>)
+                                    })} */}
+
+                                    {this.state.attributesListArray.map(el => {
+                                        return (
+                                            <tr key={el}>
+                                                <td>{el}</td>
+                                                <td>{this.state.attributesListJson[el] || '-'}</td>
+                                            </tr>)
+                                    })}
                                 </tbody>
                             </table>
                         </div>

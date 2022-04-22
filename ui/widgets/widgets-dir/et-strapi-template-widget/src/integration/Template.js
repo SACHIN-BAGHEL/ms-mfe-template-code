@@ -14,7 +14,7 @@ const urlPagedTemplates = `${templateBaseUrl}paged`;
  * @returns 
  */
 export const getAllTemplates = async (page, pageSize, selectedContentType) => {
-    const url = `${urlPagedTemplates}?page=${page}&pageSize=${pageSize}&collectionType=${selectedContentType}`;
+    const url = `${urlPagedTemplates}?page=${page}&pageSize=${pageSize}&collectionType=${encodeURIComponent(selectedContentType)}`;
     const { data, isError } = await getData(url)
     // eventHandler(
     //     isError,
