@@ -494,11 +494,11 @@ class ContentTemplateForm extends Component {
 
     render() {
         return (
-            <div className="container-fluid" style={{marginTop:"2vw"}}>
+            <div className="container-fluid" style={{ marginTop: "2vw" }}>
                 <form onSubmit={this.handleSubmit}>
                     <div className="formContainer col-xs-12" style={{ marginBottom: "2vw" }}>
                         <div className="col-lg-6">
-                            <h1 style={{margin: "auto"}}><b>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</b></h1>
+                            <h1 style={{ margin: "auto" }}><b>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</b></h1>
                         </div>
                         <div className="col-lg-6">
                             <div className="pull-right">
@@ -516,12 +516,20 @@ class ContentTemplateForm extends Component {
                             <label htmlFor="type" className="control-label">
                                 <span className="FormLabel">
                                     <span>Type</span>
-                                    {/* <sup>
+                                    <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
-                                    <button type="button" className="btn btn-link">
-                                        <span aria-hidden="true" className="pficon pficon-info"></span>
-                                    </button> */}
+                                    <FieldLevelHelp
+                                        buttonClass=""
+                                        close={undefined}
+                                        content="Select one existing collection type to use for the content template."
+                                        inline
+                                        placement="right"
+                                        rootClose
+                                    />
+                                    {/* <button type="button" className="btn btn-link">
+        <span aria-hidden="true" className="pficon pficon-info"></span>
+        </button> */}
                                 </span>
                             </label>
                         </div>
@@ -533,7 +541,7 @@ class ContentTemplateForm extends Component {
                                 placeholder="Choose..."
                                 selected={this.state.selectedContentType}
                                 className={this.state.errorObj.type.message && 'has-error'}
-                                onBlur={()=>this.onBlurHandler(ELE_TYPE.TYPE)}
+                                onBlur={() => this.onBlurHandler(ELE_TYPE.TYPE)}
                                 disabled={this.state.formType === EDIT_LABEL}
                             />
                         </div>
@@ -552,12 +560,20 @@ class ContentTemplateForm extends Component {
                             <label htmlFor="name" className="control-label">
                                 <span className="FormLabel">
                                     <span>Name</span>
-                                    {/* <sup>
-                                    <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
-                                </sup>
-                                <button type="button" className="btn btn-link">
-                                    <span aria-hidden="true" className="pficon pficon-info"></span>
-                                </button> */}
+                                    <sup>
+                                        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+                                    </sup>
+                                    <FieldLevelHelp
+                                        buttonClass=""
+                                        close={undefined}
+                                        content="You can insert up to 50 characters, including upper or lowerccase letters, numbers and special characters."
+                                        inline
+                                        placement="right"
+                                        rootClose
+                                    />
+                                    {/* <button type="button" className="btn btn-link">
+        <span aria-hidden="true" className="pficon pficon-info"></span>
+        </button> */}
                                 </span>
                             </label>
                         </div>
@@ -570,7 +586,7 @@ class ContentTemplateForm extends Component {
                                 className="form-control RenderTextInput"
                                 value={this.state.name}
                                 onChange={this.handleNameChange}
-                                onBlur={()=>this.onBlurHandler(ELE_TYPE.NAME)}
+                                onBlur={() => this.onBlurHandler(ELE_TYPE.NAME)}
                             />
                         </div>
                         <div className="col-lg-1">
@@ -584,13 +600,25 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-1" style={{padding: "0"}}>
                             <label htmlFor="attributes" className="control-label">
                                 <span className="FormLabel">
                                     <span>Attributes</span>
+                                    <sup>
+                                        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+                                    </sup>
+                                    <FieldLevelHelp
+                                        buttonClass=""
+                                        close={undefined}
+                                        content="Provides the attributes list for the selected collection type."
+                                        inline
+                                        placement="right"
+                                        rootClose
+                                    />
                                 </span>
                             </label>
                         </div>
+
                         <div className="col-lg-11">
                             <table className="table dataTable table-striped table-bordered table-hover">
                                 <thead>
@@ -602,22 +630,11 @@ class ContentTemplateForm extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* {this.state.attributesList.map(el => {
-                                        console.log('ugly',el);
-                                        (
-                                            <tr key={Object.keys(el)[0]}>
-                                                <td>{Object.keys(el)[0]}</td>
-                                                <td>{el[Object.keys(el)[0]]}</td>
-                                            </tr>)
-                                    })} */}
-
-                                    {this.state.attributesListArray.map(el => {
-                                        return (
-                                            <tr key={el}>
-                                                <td>{el}</td>
-                                                <td>{this.state.attributesListJson[el] || '-'}</td>
-                                            </tr>)
-                                    })}
+                                    {this.state.attributesList.map(el => (
+                                        <tr key={Object.keys(el)[0]}>
+                                            <td>{Object.keys(el)[0]}</td>
+                                            <td>{el[Object.keys(el)[0]]}</td>
+                                        </tr>))}
                                 </tbody>
                             </table>
                         </div>
@@ -627,6 +644,9 @@ class ContentTemplateForm extends Component {
                             <label htmlFor="modal" className="control-label">
                                 <span className="FormLabel">
                                     <span>Model</span>
+                                    <sup>
+                                        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+                                    </sup>
                                     <FieldLevelHelp
                                         buttonClass=""
                                         close={undefined}
@@ -664,38 +684,46 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleEditorCodingChange}
                                 onLoad={this.onEditorLoaded}
                                 value={this.state.editorCoding}
-                                style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
-                                onBlur={()=>this.onBlurHandler(ELE_TYPE.EDITORCODING)}
+                                style={{ borderStyle: "solid", borderColor: "silver", borderWidth: "thin" }}
+                                onBlur={() => this.onBlurHandler(ELE_TYPE.EDITORCODING)}
                             />
                         </div>
 
                         <div className="col-lg-1">
-                    </div>
-                    <div className="col-lg-11">
-                        <span>(press ctrl + space to open content assist menu)</span>
-                    </div>
+                        </div>
+                        <div className="col-lg-11">
+                            <span>(press ctrl + space to open content assist menu)</span>
+                        </div>
 
-                    <div className="col-lg-1">
-                    </div>
-                    <div className="col-lg-11">
-                        {this.state.errorObj.editorCoding.message &&
-                            <span className="validation-block">
-                                <span>{this.state.errorObj.editorCoding.message}</span>
-                            </span>
-                        }
-                    </div>
+                        <div className="col-lg-1">
+                        </div>
+                        <div className="col-lg-11">
+                            {this.state.errorObj.editorCoding.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.editorCoding.message}</span>
+                                </span>
+                            }
+                        </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-1" style={{padding: "0"}}>
                             <label htmlFor="stylesheet" className="control-label">
                                 <span className="FormLabel">
                                     <span>Style Sheet</span>
                                     {/* <sup>
-                                    <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
-                                </sup>
-                                <button type="button" className="btn btn-link">
-                                    <span aria-hidden="true" className="pficon pficon-info"></span>
-                                </button> */}
+        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+        </sup> */}
+                                    <FieldLevelHelp
+                                        buttonClass=""
+                                        close={undefined}
+                                        content="Provides a stylesheet file to be used with the HTML model."
+                                        inline
+                                        placement="right"
+                                        rootClose
+                                    />
+                                    {/* <button type="button" className="btn btn-link">
+        <span aria-hidden="true" className="pficon pficon-info"></span>
+        </button> */}
                                 </span>
                             </label>
                         </div>
@@ -710,19 +738,19 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleStyleSheetChange}
                             />
                         </div>
-                    <div className="col-lg-1">
-                    </div>
-                    <div className="col-lg-11">
-                        {this.state.errorObj.styleSheet.message &&
-                            <span className="validation-block">
-                                <span>{this.state.errorObj.styleSheet.message}</span>
-                            </span>
-                        }
-                    </div>
+                        <div className="col-lg-1">
+                        </div>
+                        <div className="col-lg-11">
+                            {this.state.errorObj.styleSheet.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.styleSheet.message}</span>
+                                </span>
+                            }
+                        </div>
                     </div>
 
                 </form>
-                
+
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"} cancelButtonLabel={CLOSE_LABEL}>
                     <span>
                         Provides an example on how to activate <strong>INLINE EDITING</strong> for Entando labels<br /><br />
