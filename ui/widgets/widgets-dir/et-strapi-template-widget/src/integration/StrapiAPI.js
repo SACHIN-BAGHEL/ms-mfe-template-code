@@ -13,25 +13,25 @@ const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
  * @returns 
  */
 //TODO: Remove commentted code later
-export const getStrapiContentTypes = async () => {
-    const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
-        }
-    });
-    return data;
-}
+// export const getStrapiContentTypes = async () => {
+//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
+//         headers: {
+//             'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
+//         }
+//     });
+//     return data;
+// }
 
 /**
  * Get strapi content types
  * @returns 
  */
-// export const getStrapiContentTypes = async () => {
-//     const url = `${strapiBaseUrl}/content-manager/content-types`;
-//     // const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
-//     const data = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
-//     return data;
-// }
+export const getStrapiContentTypes = async () => {
+    const url = `${strapiBaseUrl}/content-manager/content-types`;
+    // const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    const data = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    return data;
+}
 
 /**
  * Get attribute fields of given content type from strapi
@@ -40,12 +40,12 @@ export const getStrapiContentTypes = async () => {
  */
  export const getFields = async (contentType) => {
     const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO use this through proxy 
-    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
-        }
-    });
-    // const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+    //     headers: {
+    //         'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
+    //     }
+    // });
+    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
     console.log("Result", results);
     const content = {};
     if (results && results.length) {
@@ -112,12 +112,12 @@ let dummyData = {}
 
 export const getAttributes = async (contentType) => {
     const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO use this through proxy 
-    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
-        }
-    });
-    // const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+    //     headers: {
+    //         'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
+    //     }
+    // });
+    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
     const content = {};
     if (results && results.length) {
         const fieldsArr = Object.keys(results[0]);
