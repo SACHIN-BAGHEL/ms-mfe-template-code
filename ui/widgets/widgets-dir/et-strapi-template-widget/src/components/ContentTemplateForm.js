@@ -9,7 +9,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import { Link, withRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
-    ADD_LABEL, CANCEL_LABEL, CLOSE_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
+    ADD_LABEL, ADD_TEMP_LABEL, CANCEL_LABEL, CLOSE_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, EDIT_TEMP_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
     NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
     TEMPLATE_CREATED_SUCCESSFULLY_MSG, TEMPLATE_UPDATED_MSG
 } from '../constant/constant';
@@ -498,45 +498,39 @@ class ContentTemplateForm extends Component {
                 <form onSubmit={this.handleSubmit}>
                     <div className="formContainer col-xs-12" style={{ marginBottom: "2em" }}>
                         <div className="col-lg-6">
-                            <h1 style={{ margin: "auto" }}><b>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</b></h1>
+                            <h1 style={{ margin: "auto" }}><b>{this.props.formType === EDIT_LABEL ? EDIT_TEMP_LABEL : ADD_TEMP_LABEL}</b></h1>
                         </div>
                         <div className="col-lg-6">
                             <div className="pull-right">
                                 <Link to="/">
                                     <button className="btn-default btn">{CANCEL_LABEL}</button>
                                 </Link>
-                                {/* <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button> */}
                                 <button className="btn-primary btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
                             </div>
-                            {/* <button className="btn-primary primary-btn mv-2 btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button> */}
                         </div>
                     </div>
-                    <div className='Required-field' style={{ marginBottom: "10px" }}>
-                        <span style={{
-                            paddingLeft: "1657px",
-                        }}>* Required Fields</span>
-                        <hr style={{ marginTop: "1px" }} />
+                    <div className="formContainer col-xs-12 form-group">
+                        <div className="col-lg-12">
+                            <legend style={{ fontSize: "12px", color: '#d1d1d1' }}>
+                                <div className="text-right">
+                                    * <span>Required Fields</span>
+                                </div>
+                            </legend>
+                        </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="type" className="control-label">
                                 <span className="FormLabel">
-                                    <span style={{
-                                        paddingLeft: "38px",
-                                        paddingTop: "2em"
-                                    }}>Type</span>
+                                    <span>Type</span>
                                     <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
-                                    <FieldLevelHelp buttonClass="" close={undefined} content="Select one existing collection type to use for the content template." inline placement="right" rootClose />
-                                    {/* <button type="button" className="btn btn-link" >
-        <span aria-hidden="true" className="pficon pficon-info" content="Select one existing collection type to use for the content template.">
-        </span>
-        </button> */}
                                 </span>
                             </label>
+                            <FieldLevelHelp buttonClass="" close={undefined} content="Select one existing collection type to use for the content template." inline placement="right" rootClose />
                         </div>
-                        <div className={`col-lg-11`}>
+                        <div className={`col-lg-10`}>
                             <Typeahead
                                 id="basic-typeahead-multiple"
                                 onChange={this.handleTypeHeadChange}
@@ -547,10 +541,6 @@ class ContentTemplateForm extends Component {
                                 onBlur={() => this.onBlurHandler(ELE_TYPE.TYPE)}
                                 disabled={this.state.formType === EDIT_LABEL}
                             />
-                        </div>
-                        <div className="col-lg-1">
-                        </div>
-                        <div className="col-lg-11">
                             {this.state.errorObj.type.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.type.message}</span>
@@ -559,21 +549,18 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="name" className="control-label">
                                 <span className="FormLabel">
-                                    <span style={{ paddingLeft: "32px" }}>Name</span>
+                                    <span>Name</span>
                                     <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
                                     <FieldLevelHelp buttonClass="" close={undefined} content="You can insert up to 50 characters, including upper or lowerccase letters, numbers and special characters." inline placement="right" rootClose />
-                                    {/* <button type="button" className="btn btn-link">
-        <span aria-hidden="true" className="pficon pficon-info"></span>
-        </button> */}
                                 </span>
                             </label>
                         </div>
-                        <div className={`col-lg-11 ${this.state.errorObj.name.message && 'has-error'}`}>
+                        <div className={`col-lg-10 ${this.state.errorObj.name.message && 'has-error'}`}>
                             <input
                                 name="id"
                                 type="text"
@@ -585,9 +572,9 @@ class ContentTemplateForm extends Component {
                                 onBlur={() => this.onBlurHandler(ELE_TYPE.NAME)}
                             />
                         </div>
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             {this.state.errorObj.name.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.name.message}</span>
@@ -596,10 +583,10 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="attributes" className="control-label">
                                 <span className="FormLabel">
-                                    <span style={{ paddingLeft: "8px" }}> Attributes</span>
+                                    <span> Attributes</span>
                                     <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
@@ -608,7 +595,7 @@ class ContentTemplateForm extends Component {
                             </label>
                         </div>
 
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <table className="table dataTable table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -629,10 +616,10 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="modal" className="control-label">
                                 <span className="FormLabel">
-                                    <span style={{ paddingLeft: "30px" }}>Model</span>
+                                    <span>HTML Model</span>
                                     <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
@@ -640,19 +627,16 @@ class ContentTemplateForm extends Component {
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <button type="button" onClick={() => this.setState({ modalShow: true })} className="btn-default btn" style={{
-                                // backgroundColor : "#cccccc",
                                 color: "black"
-
-                                // <button className="btn-default btn">{CANCEL_LABEL}</button>
                             }}>Inline editing assistant</button>
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <AceEditor
                                 mode="html"
                                 theme="tomorrow"
@@ -676,15 +660,15 @@ class ContentTemplateForm extends Component {
                             />
                         </div>
 
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <span>(press ctrl + space to open content assist menu)</span>
                         </div>
 
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             {this.state.errorObj.editorCoding.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.editorCoding.message}</span>
@@ -693,21 +677,15 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="stylesheet" className="control-label">
                                 <span className="FormLabel">
-                                    <span style={{ paddingLeft: "8px" }}>Style Sheet</span>
-                                    {/* <sup>
-        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
-        </sup> */}
+                                    <span>Style Sheet</span>
                                     <FieldLevelHelp buttonClass="" close={undefined} content="Provides a stylesheet file to be used with the HTML model." inline placement="right" rootClose />
-                                    {/* <button type="button" className="btn btn-link">
-        <span aria-hidden="true" className="pficon pficon-info"></span>
-        </button> */}
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <input
                                 name="id"
                                 type="text"
@@ -718,9 +696,9 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleStyleSheetChange}
                             />
                         </div>
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             {this.state.errorObj.styleSheet.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.styleSheet.message}</span>
