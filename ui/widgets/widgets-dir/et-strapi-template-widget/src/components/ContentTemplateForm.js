@@ -556,7 +556,7 @@ class ContentTemplateForm extends Component {
                                     <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
-                                    <FieldLevelHelp buttonClass="" close={undefined} content="You can insert up to 50 characters, including upper or lowerccase letters, numbers and special characters." inline placement="right" rootClose />
+                                    <FieldLevelHelp buttonClass="" close={undefined} content="You can insert up to 50 characters, including upper or lower case letters, numbers and special characters." inline placement="right" rootClose />
                                 </span>
                             </label>
                         </div>
