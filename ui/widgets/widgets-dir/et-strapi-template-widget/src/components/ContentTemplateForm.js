@@ -623,7 +623,7 @@ class ContentTemplateForm extends Component {
                                     <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
-                                    <FieldLevelHelp buttonClass="" close={undefined} content="Defines the HTML content structure using the content elements defined by the given content type." inline placement="right" rootClose />
+                                    <FieldLevelHelp buttonClass="" close={undefined} content="Defines the HTML content structure using the content elements defined by the given collection type." inline placement="right" rootClose />
                                 </span>
                             </label>
                         </div>
