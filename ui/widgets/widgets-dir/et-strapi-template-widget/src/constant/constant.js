@@ -21,6 +21,8 @@ export const SOMETHING_WENT_WRONG_MSG = 'Something went wrong, please try again.
 export const TEMPLATE_UPDATED_MSG = 'Template updated successfully';
 
 export const ADD_LABEL = 'Add';
+export const ADD_TEMP_LABEL = 'Add content template';
+export const EDIT_TEMP_LABEL = 'Edit content template';
 export const DELETE_LABEL = 'Delete';
 export const EDIT_LABEL = 'Edit';
 export const CLOSE_LABEL = 'Close';
