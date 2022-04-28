@@ -26,26 +26,49 @@ const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
  * Get strapi content types
  * @returns 
  */
+// TODO: TEST ENV START
+// export const getStrapiContentTypes = async () => {
+//     const url = `${strapiBaseUrl}/content-manager/content-types`;
+//     // const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+//     const data = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+//     return data;
+// }
+// TODO: TEST ENV END
+
+// TODO: Vijay ENV START
 export const getStrapiContentTypes = async () => {
     const url = `${strapiBaseUrl}/content-manager/content-types`;
-    // const data = await axios.get(STRAPI_CONTYPE_URL, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
-    const data = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    const data = await axios.get(url, {
+        headers: {
+            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+        }
+    });
     return data;
 }
-
+// TODO: VIJAY ENV END
 /**
  * Get attribute fields of given content type from strapi
  * @param {*} contentType 
  * @returns 
  */
  export const getFields = async (contentType) => {
-    const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO use this through proxy 
-    // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
-    //     headers: {
-    //         'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
-    //     }
-    // });
-    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // TODO: TEST ENV START
+    // const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO use this through proxy 
+    // // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+    // //     headers: {
+    // //         'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
+    // //     }
+    // // });
+    // const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // TODO: TEST ENV END
+
+    // TODO: VIJAY ENV START
+    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+        headers: {
+            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+        }
+    });
+    // TODO: VIJAY ENV END
     console.log("Result", results);
     const content = {};
     if (results && results.length) {
@@ -111,17 +134,88 @@ export const getStrapiContentTypes = async () => {
 let dummyData = {}
 
 export const getAttributes = async (contentType) => {
-    const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO use this through proxy 
-    // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
-    //     headers: {
-    //         'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
-    //     }
-    // });
-    const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // TODO: TEST ENV START
+    // const url = `${strapiBaseUrl}/content-manager/collection-types/${contentType}`; //TODO use this through proxy 
+    // // const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+    // //     headers: {
+    // //         'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
+    // //     }
+    // // });
+    // const { data: { results } } = await axios.get(url, addAuthorizationRequestConfig({}, KC_TOKEN_PREFIX));
+    // TODO: TEST ENV END
+
+    // TODO: VIJAY ENV START
+    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+        headers: {
+            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+        }
+    });
+    // TODO: VIJAY ENV END
     const content = {};
     if (results && results.length) {
         const fieldsArr = Object.keys(results[0]);
 
         return fieldsArr;
     }
+}
+
+
+// Mapping with content-types with components
+export const getContentTypes = async () => {
+    const { data: { data: contentTypesList } } = await axios.get(`http://localhost:1337/content-type-builder/content-types`, {
+        headers: {
+            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+        }
+    });
+    const filteredContentType = contentTypesList.filter(el => el.uid.startsWith('api::'));
+
+    const { data: { data: componentsList } } = await axios.get(`http://localhost:1337/content-type-builder/components`, {
+        headers: {
+            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+        }
+    });
+
+    console.log("contentTypes 1", filteredContentType);
+    console.log("components 1", componentsList);
+
+    if (contentTypesList.length) {
+        filteredContentType.map(el => {
+            for (const key in el.schema.attributes) {
+                if (Object.hasOwnProperty.call(el.schema.attributes, key)) {
+                    const element = el.schema.attributes[key];
+                    if (isTypeComponent(element, componentsList)) {
+                        const filtered = filterBy(componentsList, element)
+                        el.schema.attributes[key] = filtered[0].schema.attributes;
+                        for (const pointer in filtered[0].schema.attributes) {
+                            if (Object.hasOwnProperty.call(filtered[0].schema.attributes, pointer)) {
+                                const elementTwo = filtered[0].schema.attributes[pointer];
+                                if (isTypeComponent(elementTwo, componentsList)) {
+                                    const filteredTwo = filterBy(componentsList, elementTwo);
+                                    el.schema.attributes[key][pointer] = filteredTwo[0].schema.attributes;
+                                }
+                            }
+                        }
+                    } else if (isTypeDynamiczone(element, componentsList)) {
+                        el.schema.attributes[key].type = 'array';
+                    }
+                }
+            }
+        })
+    } else {
+        console.error('Something Went Wrong');
+    }
+}
+
+function isTypeComponent(element, componentsList) {
+    return element.type === 'component' && componentsList.length;
+}
+
+function isTypeDynamiczone(element, componentsList) {
+    return element.type === 'dynamiczone' && componentsList.length;
+}
+
+function filterBy(componentsList, element) {
+    return (
+        componentsList.filter(el => element.component.split('.')[element.component.split('.').length - 1] === el.uid.split('.')[el.uid.split('.').length - 1])
+    );
 }

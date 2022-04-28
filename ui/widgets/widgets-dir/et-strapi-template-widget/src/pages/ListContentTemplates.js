@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import TemplateDataTable from '../components/TemplateDataTable'
 import TemplateSearch from '../components/TemplateSearch'
+import { getContentTypes } from '../integration/StrapiAPI';
 export default class ListContentTemplates extends Component {
     constructor(props) {
         super(props);
@@ -10,6 +11,11 @@ export default class ListContentTemplates extends Component {
     }
 
     collectionTypeOnChange = (selectedCollectionType) => this.setState({selectedCollectionType});
+
+    componentDidMount = async () => {
+        // TODO: called only for testing. need to remove after work done
+        await getContentTypes();
+    }
 
     render() {
         return (
