@@ -1,5 +1,5 @@
 import axios from "axios";
-import { KC_TOKEN_PREFIX, STRAPI_COLTYPE_URL } from "../constant/constant";
+import { KC_TOKEN_PREFIX, PAGE, STRAPI_COLTYPE_URL } from "../constant/constant";
 import { addAuthorizationRequestConfig } from "./Integration";
 
 const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
@@ -63,16 +63,18 @@ export const getStrapiContentTypes = async () => {
     // TODO: TEST ENV END
 
     // TODO: VIJAY ENV START
-    const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
+    let { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
         headers: {
             'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
         }
     });
     // TODO: VIJAY ENV END
-    console.log("Result", results);
+    const getContentTypeObj = await getContentTypes(contentType.split('.')[contentType.split('.').length - 1]);
+
     const content = {};
     if (results && results.length) {
-        const fieldsArr = Object.keys(results[0]);
+        // const fieldsArr = Object.keys(results[0]);
+        const fieldsArr = Object.keys(getContentTypeObj);
 
         const obj = {}
 
@@ -105,15 +107,11 @@ export const getStrapiContentTypes = async () => {
         }
 
         fieldsArr.map((el) => {
-
-
             if (obj.hasOwnProperty(el)) {
                 const arr = obj[el];
-                console.log(arr[obj[el].length]);
-                // console.log("ullu",obj[el], [obj[el].length]);
-                content[el] = obj[el]
+                content[el] = arr;
             } else {
-                content[el + "}}"] = [
+                content[el] = [
                     "getTextForLang(\"<LANG_CODE>\")",
                     "text",
                     "textMap(\"<LANG_CODE>\")"
@@ -128,6 +126,7 @@ export const getStrapiContentTypes = async () => {
         });
     }
     let contentObject = { 'content': content }
+    console.log('contentObject', contentObject);
     return contentObject;
 }
 
@@ -161,7 +160,7 @@ export const getAttributes = async (contentType) => {
 
 
 // Mapping with content-types with components
-export const getContentTypes = async () => {
+export const getContentTypes = async (conType) => {
     const { data: { data: contentTypesList } } = await axios.get(`http://localhost:1337/content-type-builder/content-types`, {
         headers: {
             'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
@@ -174,9 +173,6 @@ export const getContentTypes = async () => {
             'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
         }
     });
-
-    console.log("contentTypes 1", filteredContentType);
-    console.log("components 1", componentsList);
 
     if (contentTypesList.length) {
         filteredContentType.map(el => {
@@ -204,6 +200,12 @@ export const getContentTypes = async () => {
     } else {
         console.error('Something Went Wrong');
     }
+    let filterListByConType = filteredContentType.filter(el => {
+        if (el.uid.split('.')[el.uid.split('.').length - 1] === conType) {
+            return el;
+        }
+    });
+    return filterListByConType[0].schema.attributes;
 }
 
 function isTypeComponent(element, componentsList) {
