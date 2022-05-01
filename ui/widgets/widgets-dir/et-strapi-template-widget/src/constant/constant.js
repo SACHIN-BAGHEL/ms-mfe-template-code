@@ -55,9 +55,9 @@ export const TOASTER_POSITION = { }
 export const DICTIONARY = [
     {
         "caption": "content",
-        "value": "{{content",
+        "value": "$content",
         "score": 10000,
-        "meta": "content Object"
+        "meta": "$content Object"
     },
     {
         "caption": "$i18n",

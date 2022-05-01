@@ -78,7 +78,8 @@ export const getStrapiContentTypes = async () => {
 
         const obj = {}
 
-        dummyData = results[0];
+        // dummyData = results[0];
+        dummyData = getContentTypeObj;
         // Type check TODO
         for (const One in dummyData) {
             if (Object.hasOwnProperty.call(dummyData, One)) {
@@ -118,15 +119,9 @@ export const getStrapiContentTypes = async () => {
                 ]
             }
 
-            // content[el + "}}"] = [
-            //     "getTextForLang(\"<LANG_CODE>\")",
-            //     "text",
-            //     "textMap(\"<LANG_CODE>\")"
-            // ]
         });
     }
-    let contentObject = { 'content': content }
-    console.log('contentObject', contentObject);
+    let contentObject = { '$content': content }
     return contentObject;
 }
 
