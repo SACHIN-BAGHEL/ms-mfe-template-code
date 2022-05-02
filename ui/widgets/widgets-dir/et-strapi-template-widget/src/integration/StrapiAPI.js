@@ -3,6 +3,9 @@ import { KC_TOKEN_PREFIX, PAGE, STRAPI_COLTYPE_URL } from "../constant/constant"
 import { addAuthorizationRequestConfig } from "./Integration";
 
 const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
+const token = {
+    'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+};
 
 /*********************
  * Strapi COLLECTION TYPE
@@ -12,12 +15,10 @@ const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
  * Get strapi content types
  * @returns 
  */
-//TODO: Remove commentted code later
+// TODO: Remove commentted code later
 // export const getStrapiContentTypes = async () => {
 //     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
-//         headers: {
-//             'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwNDQ5NjEyLCJleHAiOjE2NTMwNDE2MTJ9.6MiSNj9LIe5_jooQLAVflzPulWvOczBNKXQuLJCg1Zc'}`
-//         }
+//         headers: token
 //     });
 //     return data;
 // }
@@ -39,9 +40,7 @@ const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
 export const getStrapiContentTypes = async () => {
     const url = `${strapiBaseUrl}/content-manager/content-types`;
     const data = await axios.get(url, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
-        }
+        headers: token
     });
     return data;
 }
@@ -64,9 +63,7 @@ export const getStrapiContentTypes = async () => {
 
     // TODO: VIJAY ENV START
     let { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
-        }
+        headers: token
     });
     // TODO: VIJAY ENV END
     const getContentTypeObj = await getContentTypes(contentType.split('.')[contentType.split('.').length - 1]);
@@ -140,9 +137,7 @@ export const getAttributes = async (contentType) => {
 
     // TODO: VIJAY ENV START
     const { data: { results } } = await axios.get(`${STRAPI_COLTYPE_URL}${contentType}`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
-        }
+        headers: token
     });
     // TODO: VIJAY ENV END
     const content = {};
@@ -157,16 +152,12 @@ export const getAttributes = async (contentType) => {
 // Mapping with content-types with components
 export const getContentTypes = async (conType) => {
     const { data: { data: contentTypesList } } = await axios.get(`http://localhost:1337/content-type-builder/content-types`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
-        }
+
     });
     const filteredContentType = contentTypesList.filter(el => el.uid.startsWith('api::'));
 
     const { data: { data: componentsList } } = await axios.get(`http://localhost:1337/content-type-builder/components`, {
-        headers: {
-            'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
-        }
+        headers: token
     });
 
     if (contentTypesList.length) {
