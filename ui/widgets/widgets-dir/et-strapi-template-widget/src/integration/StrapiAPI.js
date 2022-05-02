@@ -4,7 +4,7 @@ import { addAuthorizationRequestConfig } from "./Integration";
 
 const strapiBaseUrl = `${process.env.REACT_APP_STRAPI_API_URL}`;
 const token = {
-    'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUwOTY1ODU1LCJleHAiOjE2NTM1NTc4NTV9.JAwQ2tS16tJsyo8a8WKNA7nXGLRsOCDJeVXBHs-MwL8'}`
+    'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjUxNDg0MjExLCJleHAiOjE2NTQwNzYyMTF9.HHLzqCfhuyNn0bfXtBOxWRVctMKrQuRkaDul9xerqFs'}`
 };
 
 /*********************
@@ -17,7 +17,7 @@ const token = {
  */
 // TODO: Remove commentted code later
 // export const getStrapiContentTypes = async () => {
-//     const data = await axios.get(`http://localhost:1337/content-manager/content-types`, {
+//     const data = await axios.get(`${strapiBaseUrl}/content-manager/content-types`, {
 //         headers: token
 //     });
 //     return data;
@@ -151,12 +151,12 @@ export const getAttributes = async (contentType) => {
 
 // Mapping with content-types with components
 export const getContentTypes = async (conType) => {
-    const { data: { data: contentTypesList } } = await axios.get(`http://localhost:1337/content-type-builder/content-types`, {
-
+    const { data: { data: contentTypesList } } = await axios.get(`${strapiBaseUrl}/content-type-builder/content-types`, {
+        headers: token
     });
     const filteredContentType = contentTypesList.filter(el => el.uid.startsWith('api::'));
 
-    const { data: { data: componentsList } } = await axios.get(`http://localhost:1337/content-type-builder/components`, {
+    const { data: { data: componentsList } } = await axios.get(`${strapiBaseUrl}/content-type-builder/components`, {
         headers: token
     });
 
