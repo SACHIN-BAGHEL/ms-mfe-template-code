@@ -9,12 +9,12 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import { Link, withRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
-    ADD_LABEL, CANCEL_LABEL, CLOSE_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
+    ADD_LABEL, ADD_TEMP_LABEL, CANCEL_LABEL, CLOSE_LABEL, DICTIONARY, DICTMAPPED, EDIT_LABEL, EDIT_TEMP_LABEL, ELE_TYPE, FIELD_REQ, MAX50CHAR, NOTIFICATION_OBJECT, NOTIFICATION_TIMER_ERROR,
     NOTIFICATION_TIMER_SUCCESS, NOTIFICATION_TYPE, SAVE_LABEL, SOMETHING_WENT_WRONG_MSG,
     TEMPLATE_CREATED_SUCCESSFULLY_MSG, TEMPLATE_UPDATED_MSG
 } from '../constant/constant';
 import { filterACollectionType, getFilteredContentTypes } from '../helpers/helpers';
-import { getFields } from '../integration/StrapiAPI';
+import { getAttributes, getFields } from '../integration/StrapiAPI';
 import { addNewTemplate, editTemplate, getTemplateById } from '../integration/Template';
 import ModalUI from './ModalUI';
 import { FieldLevelHelp } from 'patternfly-react';
@@ -61,6 +61,8 @@ class ContentTemplateForm extends Component {
             dictMapped: DICTMAPPED,
             contentTemplateCompleter: null,
             attributesList: [],
+            attributesListJson: {},
+            attributesListArray : [],
             formType: this.props.formType,
             errorObj: {
                 name: {
@@ -205,14 +207,17 @@ class ContentTemplateForm extends Component {
     /**
      * Get code and type fields of attributes
      */
-    getAttributeData(uid) {
+    async getAttributeData(uid) {
         let refinedAttributes = [];
+        let refinedJson = {};
         const filteredAttributes = this.state.contentTypes.filter((el) => el.uid === uid);
         for (let attr in filteredAttributes[0].attributes) {
             refinedAttributes.push({ [attr]: filteredAttributes[0].attributes[attr]['type'] });
+            refinedJson[attr] = filteredAttributes[0].attributes[attr]['type'];
         }
-        this.setState({ attributesList: refinedAttributes });
-        this.getReflectiveFields(filteredAttributes);
+        const getAtt = await getAttributes(filteredAttributes[0]['uid'])
+        this.setState({ attributesList: refinedAttributes, attributesListJson: refinedJson,attributesListArray: getAtt });
+
     }
 
     /**
@@ -261,6 +266,8 @@ class ContentTemplateForm extends Component {
             this.setState({ errorObj: errObjTemp })
             this.setState({ selectedContentType: selectedContentTypeObj }, async () => {
                 this.getAttributeData(selectedContentTypeObj[0].uid);
+                const dataForDictMap = await getFields(selectedContentTypeObj[0].uid);
+                this.setState({ dictMapped: dataForDictMap });
             });
         } else {
             errObjTemp.type.valid = false;
@@ -487,38 +494,43 @@ class ContentTemplateForm extends Component {
 
     render() {
         return (
-            <div className="container-fluid" style={{marginTop:"2vw"}}>
+            <div className="container-fluid" style={{ marginTop: "2vw" }}>
                 <form onSubmit={this.handleSubmit}>
-                    <div className="formContainer col-xs-12" style={{ marginBottom: "2vw" }}>
+                    <div className="formContainer col-xs-12" style={{ marginBottom: "2em" }}>
                         <div className="col-lg-6">
-                            <h1 style={{margin: "auto"}}><b>{this.props.formType === EDIT_LABEL ? EDIT_LABEL : ADD_LABEL}</b></h1>
+                            <h1 style={{ margin: "auto" }}><b>{this.props.formType === EDIT_LABEL ? EDIT_TEMP_LABEL : ADD_TEMP_LABEL}</b></h1>
                         </div>
                         <div className="col-lg-6">
                             <div className="pull-right">
                                 <Link to="/">
                                     <button className="btn-default btn">{CANCEL_LABEL}</button>
                                 </Link>
-                                {/* <button className="btn-primary" type="submit" style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button> */}
                                 <button className="btn-primary btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft: "1vw" }}>{SAVE_LABEL}</button>
                             </div>
-                            {/* <button className="btn-primary primary-btn mv-2 btn" type="submit" disabled={!(this.state.errorObj.name.valid && this.state.errorObj.editorCoding.valid && this.state.errorObj.type.valid)} style={{ marginLeft:"1vw"}}>{SAVE_LABEL}</button> */}
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-12">
+                            <legend style={{ fontSize: "12px", color: '#d1d1d1' }}>
+                                <div className="text-right">
+                                    * <span>Required Fields</span>
+                                </div>
+                            </legend>
+                        </div>
+                    </div>
+                    <div className="formContainer col-xs-12 form-group">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="type" className="control-label">
                                 <span className="FormLabel">
                                     <span>Type</span>
-                                    {/* <sup>
+                                    <sup>
                                         <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
                                     </sup>
-                                    <button type="button" className="btn btn-link">
-                                        <span aria-hidden="true" className="pficon pficon-info"></span>
-                                    </button> */}
                                 </span>
                             </label>
+                            <FieldLevelHelp buttonClass="" close={undefined} content="Select one existing collection type to use for the content template." inline placement="right" rootClose />
                         </div>
-                        <div className={`col-lg-11`}>
+                        <div className={`col-lg-10`}>
                             <Typeahead
                                 id="basic-typeahead-multiple"
                                 onChange={this.handleTypeHeadChange}
@@ -526,13 +538,9 @@ class ContentTemplateForm extends Component {
                                 placeholder="Choose..."
                                 selected={this.state.selectedContentType}
                                 className={this.state.errorObj.type.message && 'has-error'}
-                                onBlur={()=>this.onBlurHandler(ELE_TYPE.TYPE)}
+                                onBlur={() => this.onBlurHandler(ELE_TYPE.TYPE)}
                                 disabled={this.state.formType === EDIT_LABEL}
                             />
-                        </div>
-                        <div className="col-lg-1">
-                        </div>
-                        <div className="col-lg-11">
                             {this.state.errorObj.type.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.type.message}</span>
@@ -541,20 +549,18 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="name" className="control-label">
                                 <span className="FormLabel">
                                     <span>Name</span>
-                                    {/* <sup>
-                                    <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
-                                </sup>
-                                <button type="button" className="btn btn-link">
-                                    <span aria-hidden="true" className="pficon pficon-info"></span>
-                                </button> */}
+                                    <sup>
+                                        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+                                    </sup>
+                                    <FieldLevelHelp buttonClass="" close={undefined} content="You can insert up to 50 characters, including upper or lower case letters, numbers and special characters." inline placement="right" rootClose />
                                 </span>
                             </label>
                         </div>
-                        <div className={`col-lg-11 ${this.state.errorObj.name.message && 'has-error'}`}>
+                        <div className={`col-lg-10 ${this.state.errorObj.name.message && 'has-error'}`}>
                             <input
                                 name="id"
                                 type="text"
@@ -563,12 +569,12 @@ class ContentTemplateForm extends Component {
                                 className="form-control RenderTextInput"
                                 value={this.state.name}
                                 onChange={this.handleNameChange}
-                                onBlur={()=>this.onBlurHandler(ELE_TYPE.NAME)}
+                                onBlur={() => this.onBlurHandler(ELE_TYPE.NAME)}
                             />
                         </div>
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             {this.state.errorObj.name.message &&
                                 <span className="validation-block">
                                     <span>{this.state.errorObj.name.message}</span>
@@ -577,14 +583,19 @@ class ContentTemplateForm extends Component {
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="attributes" className="control-label">
                                 <span className="FormLabel">
-                                    <span>Attributes</span>
+                                    <span> Attributes</span>
+                                    <sup>
+                                        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+                                    </sup>
+                                    <FieldLevelHelp buttonClass="" close={undefined} content="Provides the attributes list for the selected collection type." inline placement="right" rootClose />
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-11">
+
+                        <div className="col-lg-10">
                             <table className="table dataTable table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -596,38 +607,36 @@ class ContentTemplateForm extends Component {
                                 </thead>
                                 <tbody>
                                     {this.state.attributesList.map(el => (
-                                    <tr key={Object.keys(el)[0]}>
-                                        <td>{Object.keys(el)[0]}</td>
-                                        <td>{el[Object.keys(el)[0]]}</td>
-                                    </tr>))}
+                                        <tr key={Object.keys(el)[0]}>
+                                            <td>{Object.keys(el)[0]}</td>
+                                            <td>{el[Object.keys(el)[0]]}</td>
+                                        </tr>))}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="modal" className="control-label">
                                 <span className="FormLabel">
-                                    <span>Model</span>
-                                    <FieldLevelHelp
-                                        buttonClass=""
-                                        close={undefined}
-                                        content="Defines the HTML content structure using the content elements defined by the given content type."
-                                        inline
-                                        placement="right"
-                                        rootClose
-                                    />
+                                    <span>HTML Model</span>
+                                    <sup>
+                                        <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
+                                    </sup>
+                                    <FieldLevelHelp buttonClass="" close={undefined} content="Defines the HTML content structure using the content elements defined by the given collection type." inline placement="right" rootClose />
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-11">
-                            <button type="button" onClick={() => this.setState({ modalShow: true })} className="btn btn-success">Inline editing assistant</button>
+                        <div className="col-lg-10">
+                            <button type="button" onClick={() => this.setState({ modalShow: true })} className="btn-default btn" style={{
+                                color: "black"
+                            }}>Inline editing assistant</button>
                         </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2">
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <AceEditor
                                 mode="html"
                                 theme="tomorrow"
@@ -646,42 +655,37 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleEditorCodingChange}
                                 onLoad={this.onEditorLoaded}
                                 value={this.state.editorCoding}
-                                style={{borderStyle:"solid",borderColor:"silver",borderWidth:"thin"}}
-                                onBlur={()=>this.onBlurHandler(ELE_TYPE.EDITORCODING)}
+                                style={{ borderStyle: "solid", borderColor: "silver", borderWidth: "thin" }}
+                                onBlur={() => this.onBlurHandler(ELE_TYPE.EDITORCODING)}
                             />
                         </div>
 
-                        <div className="col-lg-1">
-                    </div>
-                    <div className="col-lg-11">
-                        <span>(press ctrl + space to open content assist menu)</span>
-                    </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            <span>(press ctrl + space to open content assist menu)</span>
+                        </div>
 
-                    <div className="col-lg-1">
-                    </div>
-                    <div className="col-lg-11">
-                        {this.state.errorObj.editorCoding.message &&
-                            <span className="validation-block">
-                                <span>{this.state.errorObj.editorCoding.message}</span>
-                            </span>
-                        }
-                    </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            {this.state.errorObj.editorCoding.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.editorCoding.message}</span>
+                                </span>
+                            }
+                        </div>
                     </div>
                     <div className="formContainer col-xs-12 form-group">
-                        <div className="col-lg-1">
+                        <div className="col-lg-2 text-right">
                             <label htmlFor="stylesheet" className="control-label">
                                 <span className="FormLabel">
                                     <span>Style Sheet</span>
-                                    {/* <sup>
-                                    <i className="fa fa-asterisk required-icon FormLabel__required-icon"></i>
-                                </sup>
-                                <button type="button" className="btn btn-link">
-                                    <span aria-hidden="true" className="pficon pficon-info"></span>
-                                </button> */}
+                                    <FieldLevelHelp buttonClass="" close={undefined} content="Provides a stylesheet file to be used with the HTML model." inline placement="right" rootClose />
                                 </span>
                             </label>
                         </div>
-                        <div className="col-lg-11">
+                        <div className="col-lg-10">
                             <input
                                 name="id"
                                 type="text"
@@ -692,19 +696,19 @@ class ContentTemplateForm extends Component {
                                 onChange={this.handleStyleSheetChange}
                             />
                         </div>
-                    <div className="col-lg-1">
-                    </div>
-                    <div className="col-lg-11">
-                        {this.state.errorObj.styleSheet.message &&
-                            <span className="validation-block">
-                                <span>{this.state.errorObj.styleSheet.message}</span>
-                            </span>
-                        }
-                    </div>
+                        <div className="col-lg-2">
+                        </div>
+                        <div className="col-lg-10">
+                            {this.state.errorObj.styleSheet.message &&
+                                <span className="validation-block">
+                                    <span>{this.state.errorObj.styleSheet.message}</span>
+                                </span>
+                            }
+                        </div>
                     </div>
 
                 </form>
-                
+
                 <ModalUI modalShow={this.state.modalShow} modalHide={this.modalHide} title={"Inline editing assistant"} cancelButtonLabel={CLOSE_LABEL}>
                     <span>
                         Provides an example on how to activate <strong>INLINE EDITING</strong> for Entando labels<br /><br />
